@@ -9,7 +9,12 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.shortbreak.app",
+      "infoPlist": {
+        "UIBackgroundModes": ["fetch", "remote-notification"],
+        "LSApplicationQueriesSchemes": ["instagram"]
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -38,7 +43,10 @@
             "backgroundColor": "#000000"
           }
         }
-      ]
+      ],
+      "expo-notifications",
+      "expo-background-fetch",
+      "expo-task-manager"
     ],
     "experiments": {
       "typedRoutes": true,
