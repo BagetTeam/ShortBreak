@@ -56,6 +56,7 @@ export default function FeedScreen() {
   const [selectedPdf, setSelectedPdf] = useState<DocumentPicker.DocumentPickerAsset | null>(null);
   const [showComposer, setShowComposer] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [listHeight, setListHeight] = useState(height);
 
   const isConvexConfigured = Boolean(process.env.EXPO_PUBLIC_CONVEX_URL);
 
@@ -296,6 +297,15 @@ export default function FeedScreen() {
     []
   );
 
+  const handleListLayout = useCallback(
+    ({ nativeEvent }: { nativeEvent: { layout: { height: number } } }) => {
+      if (nativeEvent.layout.height && nativeEvent.layout.height !== listHeight) {
+        setListHeight(nativeEvent.layout.height);
+      }
+    },
+    [listHeight]
+  );
+
   if (!isConvexConfigured) {
     return (
       <ThemedView style={styles.centered}>
@@ -319,13 +329,14 @@ export default function FeedScreen() {
         ref={listRef}
         data={feedItems}
         keyExtractor={(item) => `${item.videoId}-${item.order}`}
+        onLayout={handleListLayout}
         renderItem={({ item, index }) => (
           <FeedVideoCard
             item={item}
             index={index}
             total={feedItems.length}
             isActive={index === activeIndex}
-            height={height}
+            height={listHeight}
           />
         )}
         pagingEnabled
@@ -334,13 +345,13 @@ export default function FeedScreen() {
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={viewabilityConfig}
         getItemLayout={(_, index) => ({
-          length: height,
-          offset: height * index,
+          length: listHeight,
+          offset: listHeight * index,
           index,
         })}
         initialScrollIndex={initialIndex}
         onScrollToIndexFailed={({ index }) => {
-          listRef.current?.scrollToOffset({ offset: index * height, animated: false });
+          listRef.current?.scrollToOffset({ offset: index * listHeight, animated: false });
         }}
         ListEmptyComponent={
           <ThemedView style={styles.centered}>
