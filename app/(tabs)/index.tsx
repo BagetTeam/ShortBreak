@@ -1,22 +1,24 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HelloWave } from '@/components/hello-wave';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Link } from 'expo-router';
+import { Fonts } from '@/constants/theme';
 
 export default function HomeScreen() {
+  const insets = useSafeAreaInsets();
+  
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
+      headerBackgroundColor={{ light: '#F5F5DC', dark: '#D2B48C' }}
+      headerImage={null}
+      contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}>
+      <View style={[styles.appTitleContainer, { paddingTop: insets.top + 20 }]}>
+        <ThemedText style={styles.appTitle}>ShortBreak</ThemedText>
+      </View>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Welcome!</ThemedText>
         <HelloWave />
@@ -79,6 +81,20 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
+  appTitleContainer: {
+    alignItems: 'center',
+    marginBottom: 24,
+    paddingVertical: 10,
+    minHeight: 60,
+  },
+  appTitle: {
+    fontSize: 42,
+    fontFamily: Fonts.handwritten,
+    color: '#111',
+    lineHeight: 52,
+    includeFontPadding: false,
+    textAlignVertical: 'center',
+  },
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -87,12 +103,5 @@ const styles = StyleSheet.create({
   stepContainer: {
     gap: 8,
     marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
   },
 });
