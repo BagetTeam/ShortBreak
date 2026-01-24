@@ -1,7 +1,7 @@
 # AGENTS.md - Project Context & Directives
 
 ## 1. Project Mission
-**Name:** Mindful Scroll (Personal Project)
+**Name:** ShortBreak (Personal Project)
 **Goal:** Reduce mindless scrolling on Instagram by introducing friction, "mindfulness checkpoints," and a "double-confirmation" mechanism via an iOS Shortcut interception method.
 **Core Mechanism:** The app acts as a "Gateway." When the user opens Instagram, an iOS Shortcut redirects them to this app. The app forces the user to declare their intent. If they choose to scroll, they face a "Second Chance" intervention screen to reconsider, effectively adding friction to the dopamine loop.
 
