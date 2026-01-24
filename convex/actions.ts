@@ -68,7 +68,7 @@ const fetchShortsForQuery = async (searchQuery: string) => {
   url.searchParams.set('videoDuration', 'short');
   url.searchParams.set('videoEmbeddable', 'true');
   url.searchParams.set('safeSearch', 'moderate');
-  url.searchParams.set('q', searchQuery);
+  url.searchParams.set('q', `${searchQuery} shorts`);
   url.searchParams.set('key', getYoutubeKey());
 
   const response = await fetch(url.toString());
@@ -279,8 +279,8 @@ export const generateCourseOutline = action({
     parts.push({
       text: [
         'You are a curriculum designer.',
-        'Break this topic into 5 engaging short-form video concepts.',
-        'For each concept, provide a specific YouTube search query.',
+        'Break this topic into 5 engaging YouTube Shorts concepts.',
+        'For each concept, provide a specific YouTube Shorts search query.',
         'Respond with JSON using this schema:',
         '{"courseTitle": string, "modules": [{"topicTitle": string, "searchQuery": string}] }',
         args.courseHint ? `Course hint: ${args.courseHint}` : null,
@@ -334,8 +334,8 @@ export const appendNextModule = action({
       `Course title: ${args.courseTitle}.`,
       'The following topics are already covered:',
       args.coveredTopics.length ? args.coveredTopics.join(', ') : 'None yet.',
-      'Provide the next 5 logical short-form video topics in this course.',
-      'For each topic, include a specific YouTube search query.',
+      'Provide the next 5 logical YouTube Shorts topics in this course.',
+      'For each topic, include a specific YouTube Shorts search query.',
       'Respond with JSON using this schema:',
       '{"modules": [{"topicTitle": string, "searchQuery": string}] }',
     ].join('\n');
