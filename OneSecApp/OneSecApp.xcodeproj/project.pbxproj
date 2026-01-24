@@ -7,27 +7,25 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		AA000001 /* OneSecApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000002 /* OneSecApp.swift */; };
-		AA000003 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000004 /* ContentView.swift */; };
-		AA000005 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000006 /* AppState.swift */; };
-		AA000007 /* MindfulnessCheckInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000008 /* MindfulnessCheckInView.swift */; };
-		AA000009 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA00000A /* Assets.xcassets */; };
-		AA00000B /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA00000C /* Preview Assets.xcassets */; };
+		OBJ_1 /* OneSecApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_2 /* OneSecApp.swift */; };
+		OBJ_3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_4 /* ContentView.swift */; };
+		OBJ_5 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_6 /* AppState.swift */; };
+		OBJ_7 /* MindfulnessCheckInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_8 /* MindfulnessCheckInView.swift */; };
+		OBJ_9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = OBJ_10 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		AA000001 /* OneSecApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OneSecApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		AA000002 /* OneSecApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneSecApp.swift; sourceTree = "<group>"; };
-		AA000004 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		AA000006 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
-		AA000008 /* MindfulnessCheckInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MindfulnessCheckInView.swift; sourceTree = "<group>"; };
-		AA00000A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		AA00000C /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		AA00000D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		OBJ_11 /* OneSecApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OneSecApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		OBJ_2 /* OneSecApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneSecApp.swift; sourceTree = "<group>"; };
+		OBJ_4 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		OBJ_6 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		OBJ_8 /* MindfulnessCheckInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MindfulnessCheckInView.swift; sourceTree = "<group>"; };
+		OBJ_10 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		OBJ_12 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		AA00000E /* Frameworks */ = {
+		OBJ_13 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -37,54 +35,45 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		AA00000F = {
+		OBJ_14 = {
 			isa = PBXGroup;
 			children = (
-				AA000010 /* OneSecApp */,
-				AA000011 /* Products */,
+				OBJ_15 /* OneSecApp */,
+				OBJ_16 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		AA000010 /* OneSecApp */ = {
+		OBJ_15 /* OneSecApp */ = {
 			isa = PBXGroup;
 			children = (
-				AA000002 /* OneSecApp.swift */,
-				AA000004 /* ContentView.swift */,
-				AA000006 /* AppState.swift */,
-				AA000008 /* MindfulnessCheckInView.swift */,
-				AA00000A /* Assets.xcassets */,
-				AA00000D /* Info.plist */,
-				AA000012 /* Preview Content */,
+				OBJ_2 /* OneSecApp.swift */,
+				OBJ_4 /* ContentView.swift */,
+				OBJ_6 /* AppState.swift */,
+				OBJ_8 /* MindfulnessCheckInView.swift */,
+				OBJ_10 /* Assets.xcassets */,
+				OBJ_12 /* Info.plist */,
 			);
 			path = OneSecApp;
 			sourceTree = "<group>";
 		};
-		AA000011 /* Products */ = {
+		OBJ_16 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				AA000001 /* OneSecApp.app */,
+				OBJ_11 /* OneSecApp.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		AA000012 /* Preview Content */ = {
-			isa = PBXGroup;
-			children = (
-				AA00000C /* Preview Assets.xcassets */,
-			);
-			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		AA000013 /* OneSecApp */ = {
+		OBJ_17 /* OneSecApp */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = AA000014 /* Build configuration list for PBXNativeTarget "OneSecApp" */;
+			buildConfigurationList = OBJ_18 /* Build configuration list for PBXNativeTarget "OneSecApp" */;
 			buildPhases = (
-				AA000015 /* Sources */,
-				AA00000E /* Frameworks */,
-				AA000016 /* Resources */,
+				OBJ_19 /* Sources */,
+				OBJ_13 /* Frameworks */,
+				OBJ_20 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -92,20 +81,20 @@
 			);
 			name = OneSecApp;
 			productName = OneSecApp;
-			productReference = AA000001 /* OneSecApp.app */;
+			productReference = OBJ_11 /* OneSecApp.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		AA000017 /* Project object */ = {
+		OBJ_21 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1500;
 				LastUpgradeCheck = 1500;
 			};
-			buildConfigurationList = AA000018 /* Build configuration list for PBXProject "OneSecApp" */;
+			buildConfigurationList = OBJ_22 /* Build configuration list for PBXProject "OneSecApp" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -113,44 +102,43 @@
 				en,
 				Base,
 			);
-			mainGroup = AA00000F;
-			productRefGroup = AA000011 /* Products */;
+			mainGroup = OBJ_14;
+			productRefGroup = OBJ_16 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				AA000013 /* OneSecApp */,
+				OBJ_17 /* OneSecApp */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		AA000016 /* Resources */ = {
+		OBJ_20 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AA00000B /* Preview Assets.xcassets in Resources */,
-				AA000009 /* Assets.xcassets in Resources */,
+				OBJ_9 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		AA000015 /* Sources */ = {
+		OBJ_19 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AA000001 /* OneSecApp.swift in Sources */,
-				AA000003 /* ContentView.swift in Sources */,
-				AA000005 /* AppState.swift in Sources */,
-				AA000007 /* MindfulnessCheckInView.swift in Sources */,
+				OBJ_1 /* OneSecApp.swift in Sources */,
+				OBJ_3 /* ContentView.swift in Sources */,
+				OBJ_5 /* AppState.swift in Sources */,
+				OBJ_7 /* MindfulnessCheckInView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		AA000019 /* Debug */ = {
+		OBJ_23 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_PATHS = "$(inherited)";
@@ -213,7 +201,7 @@
 			};
 			name = Debug;
 		};
-		AA00001A /* Release */ = {
+		OBJ_24 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_PATHS = "$(inherited)";
@@ -269,14 +257,14 @@
 			};
 			name = Release;
 		};
-		AA00001B /* Debug */ = {
+		OBJ_25 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"OneSecApp/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = OneSecApp/Info.plist;
@@ -299,14 +287,14 @@
 			};
 			name = Debug;
 		};
-		AA00001C /* Release */ = {
+		OBJ_26 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"OneSecApp/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = OneSecApp/Info.plist;
@@ -332,25 +320,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		AA000014 /* Build configuration list for PBXNativeTarget "OneSecApp" */ = {
+		OBJ_18 /* Build configuration list for PBXNativeTarget "OneSecApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				AA00001B /* Debug */,
-				AA00001C /* Release */,
+				OBJ_25 /* Debug */,
+				OBJ_26 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		AA000018 /* Build configuration list for PBXProject "OneSecApp" */ = {
+		OBJ_22 /* Build configuration list for PBXProject "OneSecApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				AA000019 /* Debug */,
-				AA00001A /* Release */,
+				OBJ_23 /* Debug */,
+				OBJ_24 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = AA000017 /* Project object */;
+	rootObject = OBJ_21 /* Project object */;
 }
