@@ -1,6 +1,8 @@
 import React from 'react';
 import { Platform, View } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { HouseIcon } from '@/components/HouseIcon';
+import { CameraIcon } from '@/components/CameraIcon';
 
 type TabIconProps = {
   name: 'home' | 'feed' | 'explore';
@@ -9,26 +11,20 @@ type TabIconProps = {
 };
 
 export function TabIcon({ name, color, size = 28 }: TabIconProps) {
+  // Use custom house SVG icon for home
+  if (name === 'home') {
+    return <HouseIcon size={size} color={color} />;
+  }
+
+  // Use custom camera SVG icon for feed
+  if (name === 'feed') {
+    return <CameraIcon size={size} color={color} />;
+  }
+
   // Try to use react-icons if available (for web)
   if (Platform.OS === 'web') {
     try {
       // Dynamic imports for react-icons
-      if (name === 'home') {
-        const { PiHouseLine } = require('react-icons/pi');
-        return (
-          <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-            <PiHouseLine size={size} color={color} />
-          </View>
-        );
-      }
-      if (name === 'feed') {
-        const { AiOutlineVideoCamera } = require('react-icons/ai');
-        return (
-          <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-            <AiOutlineVideoCamera size={size} color={color} />
-          </View>
-        );
-      }
       if (name === 'explore') {
         const { TbSend } = require('react-icons/tb');
         return (
@@ -44,8 +40,6 @@ export function TabIcon({ name, color, size = 28 }: TabIconProps) {
 
   // Use MaterialIcons for native or as fallback
   const iconMap = {
-    home: 'home' as const,
-    feed: 'videocam' as const,
     explore: 'send' as const,
   };
 

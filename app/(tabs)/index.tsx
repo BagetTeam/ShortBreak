@@ -16,7 +16,7 @@ export default function HomeScreen() {
       headerBackgroundColor={{ light: '#F5F5DC', dark: '#D2B48C' }}
       headerImage={null}
       contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}>
-      <View style={[styles.appTitleContainer, { paddingTop: insets.top + 20 }]}>
+      <View style={[styles.appTitleContainer, { paddingTop: insets.top + 40 }]}>
         <ThemedText style={styles.appTitle}>ShortBreak</ThemedText>
       </View>
       <ThemedView style={styles.titleContainer}>
