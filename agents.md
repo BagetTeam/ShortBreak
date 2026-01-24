@@ -20,7 +20,7 @@
   
 ### Backend & AI (Convex Ecosystem)
 *   **Database & Sync:** `convex` (React Native SDK).
-*   **AI Logic:** Google Gemini 1.5 Pro (called via **Convex Actions**).
+*   **AI Logic:** Google Gemini 3.0 Flash (called via **Convex Actions**).
 *   **Video Source:** YouTube Data API (called via **Convex Actions**).
 
 ## 3. Architecture & Logic Flow
@@ -97,7 +97,7 @@ Instead of a black-box recommendation system, the feed is generated effectively 
 ### Data Flow (The "Gemini Loop")
 1.  **Input:** User provides text prompt (e.g., "History of Rome") OR uploads a PDF (Syllabus).
 2.  **Processing (Convex Action):**
-    *   Input sent to Gemini 1.5 Pro.
+    *   Input sent to Gemini 3.0 Flash.
     *   **Gemini Task:** Generate a hierarchical "Course Outline" of search terms + specific sub-topics based on the input.
 3.  **Content Fetch (Convex Action):**
     *   System takes Gemini's sub-topics and queries **YouTube Data API** (filtering for `videoDuration: 'short'`).
@@ -140,7 +140,7 @@ Instead of a black-box recommendation system, the feed is generated effectively 
 ### B. Gemini Prompt Engineering (Convex)
 *   When generating the outline, instruct Gemini to be **granular**.
 *   *Prompt Strategy:* "You are a curriculum designer. Break this topic into 5 engaging short-form video concepts. For each concept, provide a specific YouTube search query."
-*   **PDF Handling:** If PDF is provided, pass the file token to Gemini 1.5 Pro (it handles documents natively) to extract key themes.
+*   **PDF Handling:** If PDF is provided, pass the file token to Gemini 3.0 Flash (it handles documents natively) to extract key themes.
 
 ### C. Permissions & Files
 *   Handle `react-native-document-picker` results carefully.

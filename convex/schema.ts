@@ -15,6 +15,7 @@ export default defineSchema({
   })
     .index('by_user', ['userId'])
     .index('by_user_created_at', ['userId', 'createdAt']),
+    
   feedItems: defineTable({
     courseId: v.id('courses'),
     videoId: v.string(),
