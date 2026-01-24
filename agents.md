@@ -2,8 +2,8 @@
 
 ## 1. Project Mission
 **Name:** Mindful Scroll (Personal Project)
-**Goal:** Reduce mindless scrolling on Instagram by introducing friction and "mindfulness checkpoints" via an iOS Shortcut interception method.
-**Core Mechanism:** The app does not "block" Instagram via MDM. Instead, it acts as a "Gateway." When the user opens Instagram, an iOS Shortcut redirects them to this app. The user chooses their intent ("Messages" or "Scroll"). The app then "authorizes" the specific session via a Clipboard handshake and creates a background "Nudge" timer to ensure they don't stay too long.
+**Goal:** Reduce mindless scrolling on Instagram by introducing friction, "mindfulness checkpoints," and a "double-confirmation" mechanism via an iOS Shortcut interception method.
+**Core Mechanism:** The app acts as a "Gateway." When the user opens Instagram, an iOS Shortcut redirects them to this app. The app forces the user to declare their intent. If they choose to scroll, they face a "Second Chance" intervention screen to reconsider, effectively adding friction to the dopamine loop.
 
 ## 2. Tech Stack (Strict)
 *   **Framework:** React Native CLI (iOS only).
@@ -16,63 +16,76 @@
 
 ## 3. Architecture & Logic Flow
 
-### The "Clipboard Handshake" (Crucial)
-To prevent the "Infinite Loop" where opening Instagram triggers the Shortcut which opens the App which opens Instagram...
+### The "Clipboard Handshake" (System Requirement)
+To prevent the "Infinite Loop" (Instagram -> Shortcut -> App -> Instagram...):
 1.  **User opens Instagram:** iOS Shortcut triggers.
 2.  **Shortcut Check:** Checks Clipboard for string `PASS_OPEN`.
 3.  **If `PASS_OPEN` exists:** Shortcut clears clipboard and exits (User enters Insta).
 4.  **If `PASS_OPEN` is missing:** Shortcut redirects to **Mindful Scroll App**.
 
-### The App Logic
-1.  **User Interface:** Displays two buttons: "Messages Only" and "I Want to Scroll".
-2.  **Action:** When a button is pressed:
-    *   Write `PASS_OPEN` to Clipboard.
-    *   Start `BackgroundTimer` (e.g., 90 seconds).
-    *   Deep Link to Instagram (`instagram://` or `instagram://direct_v2/inbox/`).
-3.  **The Nudge (Background):**
-    *   When `BackgroundTimer` expires, trigger `notifee` local notification.
-    *   Loop notifications every 5 seconds until user returns to App to stop them.
+### The User Flow (App Logic)
+
+#### Path A: "Go to Messages"
+1.  **User Input:** Clicks "Go to Messages" on the home screen.
+2.  **Action:**
+    *   App writes `PASS_OPEN` to Clipboard.
+    *   App starts `BackgroundTimer` for **2 Minutes** (Hardcoded).
+    *   App Deep Links to `instagram://direct_v2/inbox/`.
+3.  **Outcome:** If user is still in app after 2 mins -> **Notification Storm** starts.
+
+#### Path B: "I Want to Scroll" (The Intervention)
+1.  **User Input:** Clicks "I Want to Scroll".
+2.  **Action:** Navigate to a **"Second Chance" Screen** (Do NOT open Insta yet).
+3.  **The Second Chance UI:**
+    *   **Option 1: "Go on ShortBreak"**: Redirects user to a local mindfulness view or exits the app (Crisis averted).
+    *   **Option 2: "Continue to Reels"**: Opens a **Time Selector Modal**.
+4.  **Time Selector:**
+    *   User inputs/selects duration (e.g., 5 min, 10 min, 15 min).
+    *   **Confirm Action:**
+        *   App writes `PASS_OPEN` to Clipboard.
+        *   App starts `BackgroundTimer` for **[User Selected Duration]**.
+        *   App Deep Links to `instagram://` (Main Feed).
+5.  **Outcome:** If user is still in app after [Selected Duration] -> **Notification Storm** starts.
 
 ## 4. Implementation Directives for Agents
 
-### A. Navigation & Deep Linking
-*   Do not use complex router setups. Keep it simple.
-*   Always handle `Linking.canOpenURL` checks to prevent crashes if Insta isn't installed.
-*   **Messages Deep Link:** Use `instagram://direct_v2/inbox/`
-*   **Feed Deep Link:** Use `instagram://`
+### A. Navigation & State
+*   Use a Stack Navigator.
+*   **Home Screen:** "Messages" vs "Scroll" buttons.
+*   **Intervention Screen:** "ShortBreak" vs "Continue" buttons.
+*   **Time Selector:** Can be a Modal or a clean UI on the Intervention Screen.
+*   **ShortBreak:** Simple view with a "Good job choosing mindfulness" message.
 
 ### B. Background Timer & Notifee
-*   **Constraint:** iOS suspends apps quickly. You MUST use `react-native-background-timer` for the countdown, or the timer will pause when the user switches to Instagram.
-*   **Notifee Setup:** ensure `ios.critical: true` and `ios.sound: 'default'` are set to break through user focus.
-*   **Pattern:**
+*   **Constraint:** iOS suspends apps quickly. You MUST use `react-native-background-timer`.
+*   **Logic:**
     ```javascript
-    import BackgroundTimer from 'react-native-background-timer';
-    
-    // Start
-    const startNudge = () => {
-       BackgroundTimer.stopBackgroundTimer(); // Clear existing
-       BackgroundTimer.startBackgroundTimer(); 
+    // Pseudocode for starting the timer
+    const handleLaunchInstagram = (minutesAllowed) => {
+       BackgroundTimer.stopBackgroundTimer(); // Reset any existing
+       Clipboard.setString('PASS_OPEN');
        
-       // Set timeout logic...
-    }
-    
-    // Stop (Must be called when user returns to app)
-    const stopNudge = () => {
-       BackgroundTimer.stopBackgroundTimer();
+       const millis = minutesAllowed * 60 * 1000;
+       
+       BackgroundTimer.setTimeout(() => {
+          startNotificationStorm();
+       }, millis);
+       
+       Linking.openURL(targetUrl);
     }
     ```
+*   **Notification Storm:** Use `notifee` with `ios.critical: true`. Loop a local notification every 5 seconds until the user re-opens the Mindful App to click a "Stop" button.
 
 ### C. Permissions
-*   Agent must generate code that requests **Notification Permissions** on app mount (`notifee.requestPermission()`).
-*   No other special permissions (like Screen Time/Family Controls) are required for this MVP.
+*   Agent must generate code that requests **Notification Permissions** immediately on app mount.
 
 ## 5. "Do Not Do" (Constraints)
-1.  **NO Screen Time API:** Do not suggest `FamilyControls` or `ManagedSettings` unless explicitly asked. We are bypassing the Apple Entitlement wait time.
-2.  **NO Screen Recording:** Do not attempt to use `ReplayKit` to detect the "Reels" tab. It is technically impossible to detect UI elements inside another app on iOS.
-3.  **NO Android Code:** This is an iOS-exclusive logic flow.
+1.  **NO Screen Time API:** Do not suggest `FamilyControls`.
+2.  **NO Screen Recording:** Do not attempt to detect specific tabs (Reels vs Home) once inside Instagram. The "Reels" intent is assumed based on the user's initial choice in the app.
+3.  **NO Android Code:** iOS only.
 
 ## 6. Required "Manual Instruction" Output
-Since the AI cannot program the iOS Shortcut app, **ANY** code generation response must include a comment or footer reminding the user to set up the iOS Shortcut:
+Any code generation must include this footer:
 
 > **REMINDER:** You must configure the iOS Shortcut manually:
 > 1. Open Shortcuts > Automation > App (Instagram) > Is Opened.
