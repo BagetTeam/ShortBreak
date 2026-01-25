@@ -39,12 +39,6 @@ export default function Home() {
   );
 
   React.useEffect(() => {
-    if (prompts && prompts.length > 0 && !activePromptId) {
-      setActivePromptId(prompts[0]._id);
-    }
-  }, [prompts, activePromptId]);
-
-  React.useEffect(() => {
     if (!prompts || !activePromptId) {
       return;
     }
@@ -96,7 +90,11 @@ export default function Home() {
           />
           <SidebarSeparator />
           <div className="px-4 pb-4">
-            <Button variant="outline" className="w-full rounded-full">
+            <Button
+              variant="outline"
+              className="w-full rounded-full"
+              onClick={() => setActivePromptId(null)}
+            >
               Start New Prompt
             </Button>
           </div>
@@ -124,6 +122,7 @@ export default function Home() {
           <main className="flex flex-1 flex-col gap-6 px-6 py-6">
             <LearningWorkspace
               feedItems={feedItems ?? []}
+              activePromptId={activePromptId}
               onPromptCreated={setActivePromptId}
               isFeedLoading={isFeedLoading}
               activeIndex={activeIndex}
