@@ -223,7 +223,7 @@ struct MindfulnessCheckInView: View {
                         }
                     }) {
                         VStack(spacing: 4) {
-                            Text(hasTime ? "Continue on Insta" : "No time available")
+                            Text(hasTime ? "Continue on IG" : "No time available")
                                 .font(comingSoonFont(size: 18))
                                 .foregroundColor(hasTime ? .black : .black.opacity(0.4))
                             

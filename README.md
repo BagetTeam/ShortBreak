@@ -1,50 +1,51 @@
-# Welcome to your Expo app 👋
+# ShortBreak
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A learning and mindfulness platform with a web application for YouTube Shorts-based learning and an iOS app for mindfulness check-ins and session tracking.
 
-## Get started
+## Project Structure
 
-1. Install dependencies
+### `/web` - Web Application
 
-   ```bash
-   npm install
-   ```
+Next.js app that generates personalized learning experiences from YouTube Shorts using AI-generated outlines.
 
-2. Start the app
+**Stack:** Next.js, TypeScript, Tailwind CSS, Convex, Gemini API, YouTube API
 
-   ```bash
-   npx expo start
-   ```
+**Key Components:**
+- `shorts-feed.tsx` - Vertical scrolling video feed
+- `learning-workspace.tsx` - Main workspace for prompts and videos
+- `history-sidebar.tsx` - Prompt history sidebar
+- `mobile-navbar.tsx` - Mobile bottom navigation
 
-In the output, you'll find options to open the app in a
+**Setup:**
+1. `cd web && npm install`
+2. Create `.env.local` with `NEXT_PUBLIC_CONVEX_URL`
+3. Configure Convex environment variables (`GEMINI_API_KEY`, `YOUTUBE_API_KEY`)
+4. `npm run dev`
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+See `web/README.md` for details.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### `/OneSecApp` - iOS Application
 
-## Get a fresh project
+Native SwiftUI iOS app for mindfulness check-ins and Instagram session tracking.
 
-When you're ready, run:
+**Stack:** SwiftUI, Swift 5.0, iOS 17.0+, Core Data
 
-```bash
-npm run reset-project
-```
+**Key Views:**
+- `ContentView.swift` - Root view controller
+- `MindfulnessCheckInView.swift` - Breathing exercise UI
+- `SessionSummaryView.swift` - Session statistics
+- `AppState.swift` - Global state management
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+**Setup:**
+1. Open `OneSecApp.xcodeproj` in Xcode
+2. Configure signing with your development team
+3. Install iOS Shortcuts (Entry and Exit) from the app
+4. Create iOS Automations in Shortcuts app
 
-## Learn more
+See `OneSecApp/README.md` for details.
 
-To learn more about developing your project with Expo, look at the following resources:
+## Quick Start
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+**Web:** `cd web && npm install && npm run dev`
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+**iOS:** Open `OneSecApp/OneSecApp.xcodeproj` in Xcode and build

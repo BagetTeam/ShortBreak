@@ -162,7 +162,7 @@ struct HomeView: View {
                 Image("GreenCat")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(maxWidth: 280, maxHeight: 280)
+                    .frame(maxWidth: 350, maxHeight: 350)
                     .padding(.top, 20)
                 
                 Spacer()
