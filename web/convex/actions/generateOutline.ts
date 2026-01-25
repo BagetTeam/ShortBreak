@@ -98,11 +98,14 @@ export const generateOutline = action({
       order: index,
     }));
 
-    await ctx.runMutation(api.mutations.appendOutlineItems, {
+    const outlineIds = await ctx.runMutation(api.mutations.appendOutlineItems, {
       promptId: args.promptId,
       items,
     });
 
-    return items;
+    return items.map((item, index) => ({
+      ...item,
+      outlineItemId: outlineIds[index],
+    }));
   },
 });

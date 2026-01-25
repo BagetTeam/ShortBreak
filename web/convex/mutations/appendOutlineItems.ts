@@ -14,7 +14,7 @@ export const appendOutlineItems = mutation({
   },
   handler: async (ctx, args) => {
     const now = Date.now();
-    await Promise.all(
+    const created = await Promise.all(
       args.items.map((item) =>
         ctx.db.insert("outlineItems", {
           promptId: args.promptId,
@@ -25,5 +25,6 @@ export const appendOutlineItems = mutation({
         })
       )
     );
+    return created;
   },
 });
