@@ -26,6 +26,8 @@ type LearningWorkspaceProps = {
     title: string;
     searchQuery: string;
     order: number;
+    videosFetched?: boolean;
+    isExpansion?: boolean;
   }>;
   activePromptId?: Id<"prompts"> | null;
   onPromptCreated?: (promptId: Id<"prompts">) => void;
@@ -61,14 +63,14 @@ export function LearningWorkspace({
   );
   const createPrompt = useMutation(api.mutations.createPrompt.createPrompt);
   const generateOutline = useAction(api.actions.generateOutline.generateOutline);
-  const fetchShorts = useAction(api.actions.fetchShorts.fetchShorts);
+  const fetchNextTopic = useAction(api.actions.fetchNextTopic.fetchNextTopic);
 
   const handleSubmit = async () => {
     if (!prompt.trim()) {
       return;
     }
     setErrorMessage(null);
-    setStatusMessage("Generating subjects with Gemini...");
+    setStatusMessage("Generating learning outline with Gemini...");
     setIsSubmitting(true);
     try {
       let attachmentId: string | undefined;
@@ -92,8 +94,8 @@ export function LearningWorkspace({
       });
       onPromptCreated?.(promptId);
 
-      // Step 1: Generate outline from Gemini
-      setStatusMessage("Generating learning outline with Gemini...");
+      // Step 1: Generate comprehensive outline from Gemini
+      setStatusMessage("Creating comprehensive course outline...");
       const outlineItems = await generateOutline({
         promptId,
         prompt,
@@ -106,17 +108,16 @@ export function LearningWorkspace({
         return;
       }
 
-      // Step 2: Fetch initial batch of YouTube Shorts (all topics at once for infinite feed)
-      setStatusMessage("Finding videos for all topics...");
+      // Step 2: Fetch ONLY the first topic's videos (lazy loading)
+      setStatusMessage(`Loading videos for: ${outlineItems[0]?.title ?? "first topic"}...`);
       
-      const fetchedItems = await fetchShorts({
+      const result = await fetchNextTopic({
         promptId,
-        items: outlineItems, // Fetch all topics at once - each topic gets multiple videos
       });
 
-      if (fetchedItems.length === 0) {
+      if (result.status === "error" || result.items.length === 0) {
         setErrorMessage(
-          "No videos were found for any topics. Try tweaking the prompt."
+          "No videos were found for the first topic. Try tweaking the prompt."
         );
       } else {
         setStatusMessage(null);
@@ -184,13 +185,15 @@ export function LearningWorkspace({
             {outlineItems
               .sort((a, b) => a.order - b.order)
               .map((item, index) => {
-                const hasVideo = feedItems?.some(feedItem => feedItem.topicTitle === item.title);
+                const hasVideo = item.videosFetched || feedItems?.some(feedItem => feedItem.topicTitle === item.title);
+                const isExpansion = item.isExpansion;
                 return (
                   <li key={item._id} className="flex items-start gap-3">
                     <span className="text-sm font-medium text-black/60 min-w-[24px]">{index + 1}.</span>
-                    <span className={`text-sm ${hasVideo ? 'text-black' : 'text-black/70'}`}>
+                    <span className={`text-sm ${hasVideo ? 'text-black' : 'text-black/40'}`}>
                       {item.title}
                       {hasVideo && <span className="ml-2 text-xs text-green-600">✓</span>}
+                      {isExpansion && <span className="ml-2 text-xs text-purple-500">(expanded)</span>}
                     </span>
                   </li>
                 );

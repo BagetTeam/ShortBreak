@@ -17,6 +17,10 @@ export default defineSchema({
     errorMessage: v.optional(v.string()),
     lastWatchedIndex: v.optional(v.number()),
     lastVideoId: v.optional(v.string()),
+    // Track which topic index has been loaded (for lazy loading)
+    lastLoadedTopicIndex: v.optional(v.number()),
+    // Track how many times the outline has been expanded for infinite scrolling
+    expansionCount: v.optional(v.number()),
     createdAt: v.number(),
     updatedAt: v.number(),
   }).index("by_created_at", ["createdAt"]),
@@ -25,6 +29,12 @@ export default defineSchema({
     title: v.string(),
     searchQuery: v.string(),
     order: v.number(),
+    // Track if videos have been fetched for this topic
+    videosFetched: v.optional(v.boolean()),
+    // Track if this was added during expansion (for UI distinction)
+    isExpansion: v.optional(v.boolean()),
+    // Track which expansion round this came from
+    expansionRound: v.optional(v.number()),
     createdAt: v.number(),
   })
     .index("by_prompt", ["promptId"])

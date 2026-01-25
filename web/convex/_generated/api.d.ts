@@ -8,6 +8,8 @@
  * @module
  */
 
+import type * as actions_expandOutline from "../actions/expandOutline.js";
+import type * as actions_fetchNextTopic from "../actions/fetchNextTopic.js";
 import type * as actions_fetchShorts from "../actions/fetchShorts.js";
 import type * as actions_generateOutline from "../actions/generateOutline.js";
 import type * as mutations_appendFeedItems from "../mutations/appendFeedItems.js";
@@ -28,6 +30,8 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  "actions/expandOutline": typeof actions_expandOutline;
+  "actions/fetchNextTopic": typeof actions_fetchNextTopic;
   "actions/fetchShorts": typeof actions_fetchShorts;
   "actions/generateOutline": typeof actions_generateOutline;
   "mutations/appendFeedItems": typeof mutations_appendFeedItems;
