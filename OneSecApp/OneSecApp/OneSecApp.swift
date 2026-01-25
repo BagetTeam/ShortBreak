@@ -10,6 +10,7 @@ import SwiftUI
 @main
 struct OneSecApp: App {
     @StateObject private var appState = AppState()
+    @Environment(\.scenePhase) private var scenePhase
     
     var body: some Scene {
         WindowGroup {
@@ -18,6 +19,16 @@ struct OneSecApp: App {
                 .onOpenURL { url in
                     print("📲 Opened with URL: \(url)")
                     appState.handleURL(url)
+                }
+                .onChange(of: scenePhase) { oldPhase, newPhase in
+                    print("🔄 Scene phase: \(oldPhase) → \(newPhase)")
+                    if newPhase == .active && oldPhase != .active {
+                        // App just became active - check if we should show mindfulness
+                        // Small delay to allow URL handling to happen first
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            appState.handleAppBecameActive()
+                        }
+                    }
                 }
         }
     }

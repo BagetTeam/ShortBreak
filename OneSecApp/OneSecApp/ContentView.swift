@@ -29,6 +29,7 @@ struct ContentView: View {
 
 struct HomeView: View {
     @EnvironmentObject var appState: AppState
+    @EnvironmentObject var appState: AppState
     @State private var showSetupGuide = false
     
     // Shortcut links
@@ -248,7 +249,9 @@ struct HomeView: View {
                     
                     // Step 3: Create Automations
                     Button(action: {
-                        showSetupGuide = true
+                        if let url = URL(string: "shortcuts://") {
+                            UIApplication.shared.open(url)
+                        }
                     }) {
                         HStack {
                             Text("3")

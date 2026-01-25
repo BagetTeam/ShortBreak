@@ -81,6 +81,8 @@
 			children = (
 				89FDFC4F2F25AFFA000A4E50 /* OneSecApp.entitlements */,
 				89FDFC4D2F25A255000A4E50 /* HomeScreenShortcutView.swift */,
+				89FDFC4F2F25AFFA000A4E50 /* OneSecApp.entitlements */,
+				89FDFC4D2F25A255000A4E50 /* HomeScreenShortcutView.swift */,
 				89FDFC4B2F259D86000A4E50 /* SetupGuideView.swift */,
 				89FDFC492F259D77000A4E50 /* AppIntents.swift */,
 				OBJ_2 /* OneSecApp.swift */,
@@ -177,6 +179,7 @@
 				89FDFC4A2F259D78000A4E50 /* AppIntents.swift in Sources */,
 				89FDFC4A2F259D78000A4E50 /* AppIntents.swift in Sources */,
 				OBJ_3 /* ContentView.swift in Sources */,
+				89FDFC4E2F25A255000A4E50 /* HomeScreenShortcutView.swift in Sources */,
 				89FDFC4E2F25A255000A4E50 /* HomeScreenShortcutView.swift in Sources */,
 				89FDFC4C2F259D86000A4E50 /* SetupGuideView.swift in Sources */,
 				OBJ_5 /* AppState.swift in Sources */,
