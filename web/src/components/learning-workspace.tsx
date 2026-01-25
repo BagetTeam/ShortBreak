@@ -42,6 +42,7 @@ export function LearningWorkspace({
   const [prompt, setPrompt] = React.useState("");
   const [file, setFile] = React.useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
   const generateUploadUrl = useMutation(
     "storage:generateUploadUrl" as unknown as FunctionReference<
       "mutation",
@@ -58,6 +59,7 @@ export function LearningWorkspace({
     if (!prompt.trim()) {
       return;
     }
+    setErrorMessage(null);
     setIsSubmitting(true);
     try {
       let attachmentId: string | undefined;
@@ -85,16 +87,28 @@ export function LearningWorkspace({
         promptId,
         prompt,
       });
+      if (!outlineItems.length) {
+        setErrorMessage(
+          "No outline items were generated. Try a shorter or more specific prompt."
+        );
+        return;
+      }
 
-      await fetchShorts({
+      const fetchedItems = await fetchShorts({
         promptId,
         items: outlineItems,
       });
+      if (!fetchedItems.length) {
+        setErrorMessage(
+          "No videos were found for this topic. Try tweaking the prompt."
+        );
+      }
 
       setPrompt("");
       setFile(null);
     } catch (error) {
       console.error(error);
+      setErrorMessage("Something went wrong while building the feed.");
     } finally {
       setIsSubmitting(false);
     }
@@ -112,21 +126,31 @@ export function LearningWorkspace({
   if (!activePromptId && !isFeedLoading) {
     return (
       <div className="flex flex-1 items-center justify-center px-4">
-        <PromptInput
-          value={prompt}
-          onChange={setPrompt}
-          onSubmit={handleSubmit}
-          fileName={file?.name ?? null}
-          onFileSelect={setFile}
-          isSubmitting={isSubmitting}
-          className="w-full max-w-xl"
-        />
+        <div className="flex w-full max-w-xl flex-col gap-3">
+          <PromptInput
+            value={prompt}
+            onChange={setPrompt}
+            onSubmit={handleSubmit}
+            fileName={file?.name ?? null}
+            onFileSelect={setFile}
+            isSubmitting={isSubmitting}
+            className="w-full"
+          />
+          {errorMessage ? (
+            <p className="text-sm text-rose-600">{errorMessage}</p>
+          ) : null}
+        </div>
       </div>
     );
   }
 
   return (
     <div className="flex flex-1 flex-col gap-6">
+      {errorMessage ? (
+        <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+          {errorMessage}
+        </div>
+      ) : null}
       <div
         className={cn(
           "flex flex-1 items-start justify-center",

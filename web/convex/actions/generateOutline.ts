@@ -24,16 +24,18 @@ const buildPrompt = (prompt: string) => {
 };
 
 const normalizeOutline = (payload: unknown): Omit<OutlineItem, "order">[] => {
-  if (typeof payload !== "object" || !payload) {
+  if (!payload) {
     return [];
   }
 
-  const items = (payload as { items?: unknown }).items;
-  if (!Array.isArray(items)) {
+  const itemsSource = Array.isArray(payload)
+    ? payload
+    : (payload as { items?: unknown }).items;
+  if (!Array.isArray(itemsSource)) {
     return [];
   }
 
-  return items
+  return itemsSource
     .map((item) => {
       if (typeof item !== "object" || !item) {
         return null;
@@ -48,6 +50,28 @@ const normalizeOutline = (payload: unknown): Omit<OutlineItem, "order">[] => {
       return { title, searchQuery };
     })
     .filter((item): item is { title: string; searchQuery: string } => !!item);
+};
+
+const parseGeminiPayload = (text: unknown): unknown => {
+  if (typeof text !== "string") {
+    return text;
+  }
+
+  const trimmed = text.trim();
+  if (!trimmed) {
+    return {};
+  }
+
+  const jsonCandidate = trimmed
+    .replace(/^```json\s*/i, "")
+    .replace(/^```\s*/i, "")
+    .replace(/\s*```$/i, "");
+
+  try {
+    return JSON.parse(jsonCandidate);
+  } catch {
+    return {};
+  }
 };
 
 export const generateOutline = action({
@@ -90,14 +114,7 @@ export const generateOutline = action({
       data?.candidates?.[0]?.content?.parts?.[0]?.text ??
       data?.candidates?.[0]?.content?.parts?.[0] ??
       "";
-    let parsed: unknown = text;
-    if (typeof text === "string") {
-      try {
-        parsed = JSON.parse(text);
-      } catch {
-        parsed = { items: [] };
-      }
-    }
+    const parsed = parseGeminiPayload(text);
     const items = normalizeOutline(parsed).map((item, index) => ({
       ...item,
       order: index,
