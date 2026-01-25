@@ -7,12 +7,10 @@ import Image from "next/image";
 import { HistorySidebar } from "@/components/history-sidebar";
 import { LearningWorkspace } from "@/components/learning-workspace";
 import { MobileNavbar } from "@/components/mobile-navbar";
-import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarHeader,
   SidebarInset,
   SidebarProvider,
@@ -35,6 +33,12 @@ function MainContent({
   isFeedLoading,
   deletePrompt,
   updatePromptProgress,
+  fetchNextTopic,
+  expandOutline,
+  isLoadingMore,
+  setIsLoadingMore,
+  loadingStatus,
+  setLoadingStatus,
 }: {
   prompts: any;
   activePromptId: Id<"prompts"> | null;
@@ -46,6 +50,12 @@ function MainContent({
   isFeedLoading: boolean;
   deletePrompt: any;
   updatePromptProgress: any;
+  fetchNextTopic: any;
+  expandOutline: any;
+  isLoadingMore: boolean;
+  setIsLoadingMore: (loading: boolean) => void;
+  loadingStatus: string | null;
+  setLoadingStatus: (status: string | null) => void;
 }) {
   const { state } = useSidebar();
   const isMobile = useIsMobile();
@@ -138,6 +148,15 @@ function MainContent({
               />
             </div>
           )}
+          {/* Loading status indicator */}
+          {(loadingStatus || isLoadingMore) && (
+            <div 
+              className="absolute top-4 left-1/2 -translate-x-1/2 z-20 rounded-full px-4 py-2 bg-black/80 text-white text-sm shadow-lg"
+              style={{ fontFamily: 'var(--font-coming-soon)' }}
+            >
+              {loadingStatus || "Loading more..."}
+            </div>
+          )}
           <LearningWorkspace
             feedItems={feedItems ?? []}
             outlineItems={outlineItems ?? []}
@@ -158,50 +177,44 @@ function MainContent({
               });
             }}
             onNearEnd={async () => {
-              if (!activePromptId || !outlineItems || isLoadingMore) return;
+              if (!activePromptId || isLoadingMore) return;
               
               setIsLoadingMore(true);
               try {
-                // Get the current video's topic
-                const currentItem = feedItems?.[activeIndex];
-                if (!currentItem) return;
+                // Try to fetch the next topic's videos
+                const result = await fetchNextTopic({ promptId: activePromptId });
                 
-                // Find which outline item this video belongs to
-                const currentTopic = outlineItems.find(
-                  item => item.title === currentItem.topicTitle
-                );
-                
-                if (currentTopic) {
-                  // Fetch more videos for the current topic
-                  await fetchShorts({
-                    promptId: activePromptId,
-                    items: [{
-                      title: currentTopic.title,
-                      searchQuery: currentTopic.searchQuery,
-                      order: currentTopic.order,
-                      outlineItemId: currentTopic._id,
-                    }],
-                  });
-                } else if (outlineItems.length > 0) {
-                  // If we can't find the current topic, cycle to next topic
-                  const currentTopicIndex = outlineItems.findIndex(
-                    item => item.title === currentItem.topicTitle
-                  );
-                  const nextTopicIndex = (currentTopicIndex + 1) % outlineItems.length;
-                  const nextTopic = outlineItems[nextTopicIndex];
+                if (result.status === "success") {
+                  // Successfully loaded next topic
+                  setLoadingStatus(`Loaded: ${result.topicTitle}`);
+                  setTimeout(() => setLoadingStatus(null), 2000);
+                } else if (result.status === "needs_expansion") {
+                  // All topics exhausted - expand the outline with new topics
+                  setLoadingStatus("Expanding topics with AI...");
                   
-                  await fetchShorts({
-                    promptId: activePromptId,
-                    items: [{
-                      title: nextTopic.title,
-                      searchQuery: nextTopic.searchQuery,
-                      order: nextTopic.order,
-                      outlineItemId: nextTopic._id,
-                    }],
-                  });
+                  const expansionResult = await expandOutline({ promptId: activePromptId });
+                  
+                  if (expansionResult.status === "success" && expansionResult.items.length > 0) {
+                    // New topics added, fetch the first one
+                    setLoadingStatus(`Added ${expansionResult.items.length} new topics, loading videos...`);
+                    
+                    const nextResult = await fetchNextTopic({ promptId: activePromptId });
+                    if (nextResult.status === "success") {
+                      setLoadingStatus(`Loaded: ${nextResult.topicTitle}`);
+                      setTimeout(() => setLoadingStatus(null), 2000);
+                    }
+                  } else {
+                    setLoadingStatus("Could not generate more topics");
+                    setTimeout(() => setLoadingStatus(null), 3000);
+                  }
+                } else if (result.status === "no_topics") {
+                  setLoadingStatus("No topics available");
+                  setTimeout(() => setLoadingStatus(null), 2000);
                 }
               } catch (error) {
                 console.error("Error loading more videos:", error);
+                setLoadingStatus("Error loading more content");
+                setTimeout(() => setLoadingStatus(null), 3000);
               } finally {
                 setIsLoadingMore(false);
               }
@@ -246,8 +259,10 @@ export default function Home() {
   const updatePromptProgress = useMutation(
     api.mutations.updatePromptProgress.updatePromptProgress,
   );
-  const fetchShorts = useAction(api.actions.fetchShorts.fetchShorts);
+  const fetchNextTopic = useAction(api.actions.fetchNextTopic.fetchNextTopic);
+  const expandOutline = useAction(api.actions.expandOutline.expandOutline);
   const [isLoadingMore, setIsLoadingMore] = React.useState(false);
+  const [loadingStatus, setLoadingStatus] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     if (!prompts || !activePromptId) {
@@ -328,6 +343,12 @@ export default function Home() {
         isFeedLoading={isFeedLoading}
         deletePrompt={deletePrompt}
         updatePromptProgress={updatePromptProgress}
+        fetchNextTopic={fetchNextTopic}
+        expandOutline={expandOutline}
+        isLoadingMore={isLoadingMore}
+        setIsLoadingMore={setIsLoadingMore}
+        loadingStatus={loadingStatus}
+        setLoadingStatus={setLoadingStatus}
       />
     </SidebarProvider>
   );
