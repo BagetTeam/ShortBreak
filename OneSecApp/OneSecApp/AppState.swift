@@ -13,6 +13,11 @@
 //  6. If Continue → App writes "BYPASS_CONFIRM" to clipboard → Opens Instagram
 //  7. If ShortBreak → Opens web app instead
 //
+//  SCREEN TIME TRACKING:
+//  - When user enters Instagram, we record the entry time (Unix timestamp)
+//  - When user exits (detected via separate automation), we calculate duration
+//  - Duration is subtracted from allocated daily screen time
+//
 
 import SwiftUI
 import UIKit
@@ -21,11 +26,19 @@ import UIKit
 class AppState: ObservableObject {
     @Published var shouldShowMindfulness = false
     @Published var targetApp: String = "instagram://"
+    @Published var screenTimeData: ScreenTimeData?
     
     private let bypassKey = "BYPASS_CONFIRM"
+    private let dbManager = DatabaseManager.shared
     
     init() {
         shouldShowMindfulness = false
+        refreshScreenTimeData()
+    }
+    
+    /// Refresh the screen time data from database
+    func refreshScreenTimeData() {
+        screenTimeData = dbManager.getCurrentData()
     }
     
     /// Called when app is opened via URL scheme (onesec://?target=instagram://)
@@ -34,6 +47,12 @@ class AppState: ObservableObject {
         
         let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
         let queryItems = components?.queryItems ?? []
+        
+        // Check if this is an exit notification (from the "Is Closed" automation)
+        if let action = queryItems.first(where: { $0.name == "action" })?.value, action == "exit" {
+            handleInstagramExit()
+            return
+        }
         
         // Get target app from URL (default to Instagram)
         if let target = queryItems.first(where: { $0.name == "target" })?.value {
@@ -44,6 +63,7 @@ class AppState: ObservableObject {
         
         print("🧘 Showing mindfulness screen for: \(targetApp)")
         shouldShowMindfulness = true
+        refreshScreenTimeData()
     }
     
     /// Called when user taps "Continue to Instagram"
@@ -53,6 +73,10 @@ class AppState: ObservableObject {
         print("📋 Wrote '\(bypassKey)' to clipboard")
         
         targetApp = app
+        
+        // Record Instagram entry time in database
+        dbManager.recordInstagramEntry()
+        print("⏱️ Recorded Instagram entry time")
         
         // Small delay to ensure clipboard is set, then open Instagram
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -65,6 +89,37 @@ class AppState: ObservableObject {
             print("🚀 Opening: \(targetApp)")
             UIApplication.shared.open(url)
         }
+    }
+    
+    /// Called when user exits Instagram (via separate automation)
+    func handleInstagramExit() {
+        if let duration = dbManager.recordInstagramExit() {
+            print("⏱️ Instagram session ended. Duration: \(Int(duration)) seconds")
+            refreshScreenTimeData()
+            
+            // Check if user has exceeded their allocated time
+            if dbManager.hasExceededScreenTime() {
+                print("⚠️ User has exceeded allocated screen time!")
+                // You could trigger a notification or UI update here
+            }
+        }
+    }
+    
+    /// Add random screen time allocation (for hourly trigger)
+    func addHourlyScreenTime() {
+        let added = dbManager.addRandomScreenTime()
+        print("🎲 Added \(Int(added)) seconds of screen time")
+        refreshScreenTimeData()
+    }
+    
+    /// Get remaining screen time
+    var remainingScreenTime: Double {
+        return dbManager.getRemainingScreenTime()
+    }
+    
+    /// Check if user has exceeded their time
+    var hasExceededTime: Bool {
+        return dbManager.hasExceededScreenTime()
     }
     
     func cancelAccess() {
