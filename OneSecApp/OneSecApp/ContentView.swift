@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import UIKit
+import CoreText
 
 struct ContentView: View {
     @EnvironmentObject var appState: AppState
@@ -28,80 +30,217 @@ struct HomeView: View {
     // Your iCloud shortcut link for "OneSec Gate"
     let shortcutInstallURL = "https://www.icloud.com/shortcuts/393fbb98ca1d4af8bd9061ae245b4b42"
     
-    var body: some View {
-        VStack(spacing: 24) {
-            Spacer()
-            
-            Image(systemName: "leaf.fill")
-                .font(.system(size: 60))
-                .foregroundColor(.green)
-            
-            Text("One Sec")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-            
-            Text("Take a moment before you scroll")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-            
-            Spacer()
-            
-            // Setup section
-            VStack(spacing: 16) {
-                Text("Setup in 2 steps")
-                    .font(.headline)
-                
-                // Step 1: Install Shortcut
-                Button(action: {
-                    if let url = URL(string: shortcutInstallURL) {
-                        UIApplication.shared.open(url)
-                    }
-                }) {
-                    HStack {
-                        Text("1")
-                            .font(.caption)
-                            .fontWeight(.bold)
-                            .foregroundColor(.green)
-                            .frame(width: 24, height: 24)
-                            .background(Color.green.opacity(0.2))
-                            .clipShape(Circle())
-                        Text("Install 'ShortBreak' Shortcut")
-                        Spacer()
-                        Image(systemName: "arrow.up.right.square")
-                    }
-                    .foregroundColor(.primary)
-                    .padding()
-                    .background(Color.gray.opacity(0.1))
-                    .cornerRadius(12)
-                }
-                
-                // Step 2: Create Automation
-                Button(action: {
-                    showSetupGuide = true
-                }) {
-                    HStack {
-                        Text("2")
-                            .font(.caption)
-                            .fontWeight(.bold)
-                            .foregroundColor(.green)
-                            .frame(width: 24, height: 24)
-                            .background(Color.green.opacity(0.2))
-                            .clipShape(Circle())
-                        Text("Create Instagram Automation")
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                    }
-                    .foregroundColor(.primary)
-                    .padding()
-                    .background(Color.gray.opacity(0.1))
-                    .cornerRadius(12)
+    // Beige background color
+    private let beigeBackground = Color(red: 0.96, green: 0.94, blue: 0.90)
+    // Soft white for cards
+    private let softWhite = Color(red: 0.99, green: 0.99, blue: 0.98)
+    
+    init() {
+        // Register fonts from bundle if not already registered
+        registerFonts()
+    }
+    
+    private func registerFonts() {
+        // Try multiple paths for Coming Soon font
+        let comingSoonPaths = [
+            ("ComingSoon-Regular", "ttf", "Fonts"),
+            ("ComingSoon-Regular", "ttf", nil),
+            ("ComingSoon", "ttf", "Fonts"),
+            ("ComingSoon", "ttf", nil)
+        ]
+        
+        for (name, ext, subdir) in comingSoonPaths {
+            if let url = Bundle.main.url(forResource: name, withExtension: ext, subdirectory: subdir) {
+                if let fontDataProvider = CGDataProvider(url: url as CFURL),
+                   let font = CGFont(fontDataProvider) {
+                    var error: Unmanaged<CFError>?
+                    CTFontManagerRegisterGraphicsFont(font, &error)
+                    break
                 }
             }
-            .padding(.horizontal, 24)
-            .padding(.bottom, 40)
         }
-        .padding()
+        
+        // Try multiple paths for Shizuru font
+        let shizuruPaths = [
+            ("Shizuru-Regular", "ttf", "Fonts"),
+            ("Shizuru-Regular", "ttf", nil),
+            ("Shizuru", "ttf", "Fonts"),
+            ("Shizuru", "ttf", nil)
+        ]
+        
+        for (name, ext, subdir) in shizuruPaths {
+            if let url = Bundle.main.url(forResource: name, withExtension: ext, subdirectory: subdir) {
+                if let fontDataProvider = CGDataProvider(url: url as CFURL),
+                   let font = CGFont(fontDataProvider) {
+                    var error: Unmanaged<CFError>?
+                    CTFontManagerRegisterGraphicsFont(font, &error)
+                    break
+                }
+            }
+        }
+    }
+    
+    // Helper function to get Coming Soon font with fallback
+    private func comingSoonFont(size: CGFloat) -> Font {
+        let fontNames = [
+            "Coming Soon",
+            "ComingSoon",
+            "ComingSoon-Regular",
+            "ComingSoon Regular",
+            "ComingSoonRegular"
+        ]
+        
+        for fontName in fontNames {
+            if let font = UIFont(name: fontName, size: size) {
+                return Font(font)
+            }
+        }
+        
+        for family in UIFont.familyNames.sorted() {
+            if family.lowercased().contains("coming") {
+                if let font = UIFont(name: family, size: size) {
+                    return Font(font)
+                }
+                if let font = UIFont(name: "\(family)-Regular", size: size) {
+                    return Font(font)
+                }
+            }
+        }
+        
+        return .system(size: size)
+    }
+    
+    // Helper function to get Shizuru font with fallback
+    private func shizuruFont(size: CGFloat) -> Font {
+        let fontNames = [
+            "Shizuru",
+            "Shizuru-Regular",
+            "Shizuru Regular",
+            "ShizuruRegular"
+        ]
+        
+        for fontName in fontNames {
+            if let font = UIFont(name: fontName, size: size) {
+                return Font(font)
+            }
+        }
+        
+        for family in UIFont.familyNames.sorted() {
+            if family.lowercased().contains("shizuru") {
+                if let font = UIFont(name: family, size: size) {
+                    return Font(font)
+                }
+                if let font = UIFont(name: "\(family)-Regular", size: size) {
+                    return Font(font)
+                }
+            }
+        }
+        
+        return .system(size: size, design: .rounded)
+    }
+    
+    var body: some View {
+        ZStack {
+            // Beige background
+            beigeBackground
+                .ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                // ShortBreak title at the very top
+                Text("ShortBreak")
+                    .font(shizuruFont(size: 40))
+                    .foregroundColor(.black)
+                    .shadow(color: Color.black.opacity(0.3), radius: 2, x: 0, y: 1)
+                    .padding(.top, 60)
+                
+                // Green cat image below title
+                Image("GreenCat")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(maxWidth: 280, maxHeight: 280)
+                    .padding(.top, 20)
+                
+                Spacer()
+                    .frame(minHeight: 40)
+                
+                // Setup section
+                VStack(spacing: 16) {
+                    Text("Setup in 2 steps")
+                        .font(comingSoonFont(size: 18))
+                        .foregroundColor(.black)
+                    
+                    // Step 1: Install Shortcut
+                    Button(action: {
+                        if let url = URL(string: shortcutInstallURL) {
+                            UIApplication.shared.open(url)
+                        }
+                    }) {
+                        HStack {
+                            Text("1")
+                                .font(comingSoonFont(size: 16))
+                                .fontWeight(.bold)
+                                .foregroundColor(.black)
+                                .frame(width: 32, height: 32)
+                                .background(softWhite)
+                                .overlay(
+                                    Circle()
+                                        .stroke(Color.black, lineWidth: 1.5)
+                                )
+                                .clipShape(Circle())
+                            Text("Install 'ShortBreak' Shortcut")
+                                .font(comingSoonFont(size: 18))
+                                .foregroundColor(.black)
+                            Spacer()
+                            Image(systemName: "arrow.up.right.square")
+                                .foregroundColor(.black)
+                        }
+                        .padding()
+                        .background(softWhite)
+                        .cornerRadius(30)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 30)
+                                .stroke(Color.black, lineWidth: 1.5)
+                        )
+                        .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: 4)
+                    }
+                    
+                    // Step 2: Create Automation
+                    Button(action: {
+                        showSetupGuide = true
+                    }) {
+                        HStack {
+                            Text("2")
+                                .font(comingSoonFont(size: 16))
+                                .fontWeight(.bold)
+                                .foregroundColor(.black)
+                                .frame(width: 32, height: 32)
+                                .background(softWhite)
+                                .overlay(
+                                    Circle()
+                                        .stroke(Color.black, lineWidth: 1.5)
+                                )
+                                .clipShape(Circle())
+                            Text("Create Instagram Automation")
+                                .font(comingSoonFont(size: 18))
+                                .foregroundColor(.black)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.black)
+                        }
+                        .padding()
+                        .background(softWhite)
+                        .cornerRadius(30)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 30)
+                                .stroke(Color.black, lineWidth: 1.5)
+                        )
+                        .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: 4)
+                    }
+                }
+                .padding(.horizontal, 40)
+                .padding(.bottom, 80)
+            }
+        }
         .sheet(isPresented: $showSetupGuide) {
             AutomationGuideView()
         }
