@@ -9,6 +9,8 @@
 import SwiftUI
 import UIKit
 import CoreText
+import UIKit
+import CoreText
 
 struct MindfulnessCheckInView: View {
     @EnvironmentObject var appState: AppState
@@ -178,6 +180,9 @@ struct MindfulnessCheckInView: View {
             // Beige background
             beigeBackground
                 .ignoresSafeArea()
+            // Beige background
+            beigeBackground
+                .ignoresSafeArea()
             
             VStack(spacing: 0) {
                 // ShortBreak title at the very top
@@ -235,7 +240,9 @@ struct MindfulnessCheckInView: View {
                         .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: 4)
                     }
                     .padding(.horizontal, 40)
+                    .padding(.horizontal, 40)
                     
+                    // Second card: ShortBreak Website
                     // Second card: ShortBreak Website
                     Button(action: {
                         handleGoToShortBreak()

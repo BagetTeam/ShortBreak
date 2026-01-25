@@ -68,6 +68,17 @@
 			path = Fonts;
 			sourceTree = "<group>";
 		};
+		FONT_9 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				FONT_2 /* ComingSoon-Regular.ttf */,
+				FONT_4 /* Shizuru-Regular.ttf */,
+				FONT_6 /* Comfortaa-Regular.ttf */,
+				FONT_8 /* Comfortaa-Bold.ttf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
 		OBJ_14 = {
 			isa = PBXGroup;
 			children = (
