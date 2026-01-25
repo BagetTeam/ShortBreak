@@ -220,9 +220,11 @@ struct SessionSummaryView: View {
                 
                 Spacer()
                 
-                // Dismiss button
+                // Dismiss button - exits to iOS home screen
                 Button(action: {
                     appState.dismissSessionSummary()
+                    // Suspend the app to go back to iOS home screen
+                    suspendApp()
                 }) {
                     Text("Done")
                         .font(comingSoonFont(size: 20))
@@ -259,5 +261,10 @@ struct SessionSummaryView: View {
         } else {
             return "\(prefix)\(secs)s"
         }
+    }
+    
+    /// Suspends the app and returns to iOS home screen
+    private func suspendApp() {
+        UIControl().sendAction(#selector(URLSessionTask.suspend), to: UIApplication.shared, for: nil)
     }
 }
