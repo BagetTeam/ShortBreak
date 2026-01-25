@@ -51,9 +51,9 @@ export function LearningWorkspace({
   const [messages, setMessages] = React.useState<ChatMessage[]>(baseMessages);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const generateUploadUrl = useMutation(api.storage.generateUploadUrl);
-  const createPrompt = useMutation(api.mutations.createPrompt);
-  const generateOutline = useAction(api.actions.generateOutline);
-  const fetchShorts = useAction(api.actions.fetchShorts);
+  const createPrompt = useMutation(api.mutations.createPrompt.createPrompt);
+  const generateOutline = useAction(api.actions.generateOutline.generateOutline);
+  const fetchShorts = useAction(api.actions.fetchShorts.fetchShorts);
 
   const updateMessageStatus = React.useCallback(
     (messageId: string, status: ChatMessage["status"], content?: string) => {

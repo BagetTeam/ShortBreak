@@ -20,18 +20,20 @@ import {
 import { api } from "../../convex/_generated/api";
 
 export default function Home() {
-  const prompts = useQuery(api.queries.listPrompts);
+  const prompts = useQuery(api.queries.listPrompts.listPrompts);
   const [activePromptId, setActivePromptId] = React.useState<string | null>(
-    null
+    null,
   );
   const [activeIndex, setActiveIndex] = React.useState(0);
   const feedItems = useQuery(
-    api.queries.listFeedItems,
-    activePromptId ? { promptId: activePromptId } : "skip"
+    api.queries.listFeedItems.listFeedItems,
+    activePromptId ? { promptId: activePromptId } : "skip",
   );
   const isFeedLoading = activePromptId !== null && feedItems === undefined;
-  const deletePrompt = useMutation(api.mutations.deletePrompt);
-  const updatePromptProgress = useMutation(api.mutations.updatePromptProgress);
+  const deletePrompt = useMutation(api.mutations.deletePrompt.deletePrompt);
+  const updatePromptProgress = useMutation(
+    api.mutations.updatePromptProgress.updatePromptProgress,
+  );
 
   React.useEffect(() => {
     if (prompts && prompts.length > 0 && !activePromptId) {
