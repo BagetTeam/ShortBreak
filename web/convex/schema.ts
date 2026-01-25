@@ -1,7 +1,9 @@
 import { defineSchema, defineTable } from "convex/server";
+import { authTables } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 
 export default defineSchema({
+  ...authTables,
   prompts: defineTable({
     title: v.string(),
     prompt: v.string(),
@@ -11,8 +13,8 @@ export default defineSchema({
         v.literal("draft"),
         v.literal("processing"),
         v.literal("ready"),
-        v.literal("error")
-      )
+        v.literal("error"),
+      ),
     ),
     errorMessage: v.optional(v.string()),
     lastWatchedIndex: v.optional(v.number()),
@@ -50,7 +52,7 @@ export default defineSchema({
         channelTitle: v.optional(v.string()),
         duration: v.optional(v.string()),
         publishedAt: v.optional(v.string()),
-      })
+      }),
     ),
     createdAt: v.number(),
   })
