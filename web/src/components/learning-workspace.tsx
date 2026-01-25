@@ -43,6 +43,7 @@ export function LearningWorkspace({
   const [file, setFile] = React.useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
+  const [statusMessage, setStatusMessage] = React.useState<string | null>(null);
   const generateUploadUrl = useMutation(
     "storage:generateUploadUrl" as unknown as FunctionReference<
       "mutation",
@@ -60,6 +61,7 @@ export function LearningWorkspace({
       return;
     }
     setErrorMessage(null);
+    setStatusMessage("Generating subjects with Gemini...");
     setIsSubmitting(true);
     try {
       let attachmentId: string | undefined;
@@ -91,9 +93,11 @@ export function LearningWorkspace({
         setErrorMessage(
           "No outline items were generated. Try a shorter or more specific prompt."
         );
+        setStatusMessage(null);
         return;
       }
 
+      setStatusMessage("Finding matching shorts...");
       const fetchedItems = await fetchShorts({
         promptId,
         items: outlineItems,
@@ -110,6 +114,7 @@ export function LearningWorkspace({
       console.error(error);
       setErrorMessage("Something went wrong while building the feed.");
     } finally {
+      setStatusMessage(null);
       setIsSubmitting(false);
     }
   };
@@ -146,6 +151,11 @@ export function LearningWorkspace({
 
   return (
     <div className="flex flex-1 flex-col gap-6">
+      {statusMessage ? (
+        <div className="rounded-2xl border border-border/60 bg-white/70 px-4 py-3 text-sm text-muted-foreground">
+          {statusMessage}
+        </div>
+      ) : null}
       {errorMessage ? (
         <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
           {errorMessage}
