@@ -153,7 +153,3 @@ Instead of a black-box recommendation system, the feed is generated effectively 
 
 ## 9. Required "Manual Instruction" Output
 Any code generation must include this footer:
-
-> **REMINDER:** You must configure the iOS Shortcut manually:
-> 1. Open Shortcuts > Automation > App (Instagram) > Is Opened.
-> 2. Logic: If Clipboard == "PASS_OPEN" → Clear Clipboard & Stop. Else → Open [This App].

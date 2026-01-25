@@ -13,9 +13,10 @@ import {
   SidebarMenuSkeleton,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
+import type { Id } from "../../convex/_generated/dataModel";
 
 export type PromptHistoryItem = {
-  id: string;
+  id: Id<"prompts">;
   title: string;
   subtitle?: string;
   isActive?: boolean;
@@ -24,8 +25,8 @@ export type PromptHistoryItem = {
 type HistorySidebarProps = {
   prompts: PromptHistoryItem[];
   isLoading?: boolean;
-  onSelect?: (id: string) => void;
-  onDelete?: (id: string) => void;
+  onSelect?: (id: Id<"prompts">) => void;
+  onDelete?: (id: Id<"prompts">) => void;
   className?: string;
 };
 

@@ -2,12 +2,14 @@
 
 import * as React from "react";
 import { useAction, useMutation } from "convex/react";
+import type { FunctionReference } from "convex/server";
 
 import { ChatStream, type ChatMessage } from "@/components/chat-stream";
 import { PromptInput } from "@/components/prompt-input";
 import { ShortsFeed, type ShortsItem } from "@/components/shorts-feed";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
+import type { Id } from "../../convex/_generated/dataModel";
 import { api } from "../../convex/_generated/api";
 
 const baseMessages: ChatMessage[] = [
@@ -21,7 +23,7 @@ const baseMessages: ChatMessage[] = [
 
 type LearningWorkspaceProps = {
   feedItems?: Array<{
-    _id: string;
+    _id: Id<"feedItems">;
     videoId: string;
     topicTitle: string;
     order: number;
@@ -29,8 +31,8 @@ type LearningWorkspaceProps = {
       duration?: string;
     };
   }>;
-  activePromptId?: string | null;
-  onPromptCreated?: (promptId: string) => void;
+  activePromptId?: Id<"prompts"> | null;
+  onPromptCreated?: (promptId: Id<"prompts">) => void;
   activeIndex?: number;
   onActiveIndexChange?: (index: number) => void;
   onNearEnd?: () => void;
@@ -50,7 +52,14 @@ export function LearningWorkspace({
   const [file, setFile] = React.useState<File | null>(null);
   const [messages, setMessages] = React.useState<ChatMessage[]>(baseMessages);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const generateUploadUrl = useMutation(api.storage.generateUploadUrl);
+  const generateUploadUrl = useMutation(
+    "storage:generateUploadUrl" as unknown as FunctionReference<
+      "mutation",
+      "public",
+      {},
+      string
+    >,
+  );
   const createPrompt = useMutation(api.mutations.createPrompt.createPrompt);
   const generateOutline = useAction(api.actions.generateOutline.generateOutline);
   const fetchShorts = useAction(api.actions.fetchShorts.fetchShorts);

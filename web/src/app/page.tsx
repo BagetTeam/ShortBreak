@@ -17,11 +17,14 @@ import {
   SidebarSeparator,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import type { Id } from "../../convex/_generated/dataModel";
 import { api } from "../../convex/_generated/api";
 
 export default function Home() {
   const prompts = useQuery(api.queries.listPrompts.listPrompts);
-  const [activePromptId, setActivePromptId] = React.useState<string | null>(
+  const [activePromptId, setActivePromptId] = React.useState<
+    Id<"prompts"> | null
+  >(
     null,
   );
   const [activeIndex, setActiveIndex] = React.useState(0);

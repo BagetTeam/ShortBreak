@@ -4,12 +4,13 @@ import { action } from "../_generated/server";
 import { v } from "convex/values";
 
 import { api } from "../_generated/api";
+import type { Id } from "../_generated/dataModel";
 
 type OutlineInput = {
   title: string;
   searchQuery: string;
   order: number;
-  outlineItemId?: string;
+  outlineItemId?: Id<"outlineItems">;
 };
 
 export const fetchShorts = action({
@@ -21,7 +22,7 @@ export const fetchShorts = action({
         searchQuery: v.string(),
         order: v.number(),
         outlineItemId: v.optional(v.id("outlineItems")),
-      })
+      }),
     ),
   },
   handler: async (ctx, args) => {
@@ -54,24 +55,33 @@ export const fetchShorts = action({
           return null;
         }
 
+        const channelTitle =
+          typeof candidate?.snippet?.channelTitle === "string"
+            ? candidate.snippet.channelTitle
+            : undefined;
+        const publishedAt =
+          typeof candidate?.snippet?.publishedAt === "string"
+            ? candidate.snippet.publishedAt
+            : undefined;
+
         return {
           outlineItemId: item.outlineItemId,
           videoId,
           topicTitle: item.title,
           order: item.order,
           metaData: {
-            channelTitle: candidate?.snippet?.channelTitle,
-            publishedAt: candidate?.snippet?.publishedAt,
+            channelTitle,
+            publishedAt,
           },
         };
-      })
+      }),
     );
 
     const feedItems = results.filter(
-      (item): item is NonNullable<typeof item> => item !== null
+      (item): item is NonNullable<typeof item> => item !== null,
     );
 
-    await ctx.runMutation(api.mutations.appendFeedItems, {
+    await ctx.runMutation(api.mutations.appendFeedItems.appendFeedItems, {
       promptId: args.promptId,
       items: feedItems,
     });
