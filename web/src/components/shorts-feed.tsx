@@ -117,22 +117,7 @@ export function ShortsFeed({
             >
               {shouldShow ? (
                 <>
-                  {/* White card with border */}
-                  <div className="w-full max-w-sm aspect-[9/16] bg-white rounded-3xl border border-white shadow-lg flex flex-col items-center justify-center p-8">
-                    <div className="text-center space-y-4">
-                      <h3 className="text-xl font-semibold text-black" style={{ fontFamily: 'var(--font-coming-soon)' }}>
-                        {item.title}
-                      </h3>
-                      {item.topic && (
-                        <p className="text-sm text-black/70" style={{ fontFamily: 'var(--font-coming-soon)' }}>
-                          {item.topic}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  
-                  {/* Video implementation commented out for now */}
-                  {/* 
+                  {/* Video card with white border */}
                   <div className="w-full max-w-sm aspect-[9/16] bg-black rounded-3xl overflow-hidden border border-white shadow-lg">
                     <iframe
                       title={item.title}
@@ -144,16 +129,6 @@ export function ShortsFeed({
                       allowFullScreen
                     />
                   </div>
-                  <div className="absolute bottom-4 left-0 right-0 flex justify-center pointer-events-none">
-                    <div className="w-full max-w-sm space-y-2 bg-gradient-to-t from-black/80 via-black/30 to-transparent px-4 py-4 text-white rounded-b-3xl">
-                      <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.3em] text-white/70">
-                        <span>{item.topic ?? "Focus"}</span>
-                        <span>{item.duration ?? "Short"}</span>
-                      </div>
-                      <h4 className="text-base font-semibold">{item.title}</h4>
-                    </div>
-                  </div>
-                  */}
                 </>
               ) : (
                 // Placeholder for non-visible cards to maintain scroll positions
