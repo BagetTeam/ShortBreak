@@ -1,3 +1,5 @@
+"use node";
+
 import { action } from "convex/server";
 import { v } from "convex/values";
 
