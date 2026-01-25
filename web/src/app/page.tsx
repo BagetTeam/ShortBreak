@@ -1,3 +1,8 @@
+"use client";
+
+import * as React from "react";
+import { useMutation, useQuery } from "convex/react";
+
 import { HistorySidebar } from "@/components/history-sidebar";
 import { LearningWorkspace } from "@/components/learning-workspace";
 import { Button } from "@/components/ui/button";
@@ -12,8 +17,36 @@ import {
   SidebarSeparator,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { api } from "../../convex/_generated/api";
 
 export default function Home() {
+  const prompts = useQuery(api.queries.listPrompts);
+  const [activePromptId, setActivePromptId] = React.useState<string | null>(
+    null
+  );
+  const feedItems = useQuery(
+    api.queries.listFeedItems,
+    activePromptId ? { promptId: activePromptId } : "skip"
+  );
+  const deletePrompt = useMutation(api.mutations.deletePrompt);
+
+  React.useEffect(() => {
+    if (prompts && prompts.length > 0 && !activePromptId) {
+      setActivePromptId(prompts[0]._id);
+    }
+  }, [prompts, activePromptId]);
+
+  const promptHistory =
+    prompts?.map((prompt) => ({
+      id: prompt._id,
+      title: prompt.title,
+      subtitle:
+        typeof prompt.lastWatchedIndex === "number"
+          ? `Last watched: Clip ${prompt.lastWatchedIndex + 1}`
+          : "New session",
+      isActive: prompt._id === activePromptId,
+    })) ?? [];
+
   return (
     <SidebarProvider>
       <Sidebar collapsible="icon" variant="inset">
@@ -32,24 +65,15 @@ export default function Home() {
         </SidebarHeader>
         <SidebarContent>
           <HistorySidebar
-            prompts={[
-              {
-                id: "prompt-1",
-                title: "Design Fundamentals",
-                subtitle: "Last watched: Clip 3",
-                isActive: true,
-              },
-              {
-                id: "prompt-2",
-                title: "Physics Crash Course",
-                subtitle: "Last watched: Clip 1",
-              },
-              {
-                id: "prompt-3",
-                title: "Learn SwiftUI",
-                subtitle: "New",
-              },
-            ]}
+            prompts={promptHistory}
+            isLoading={!prompts}
+            onSelect={setActivePromptId}
+            onDelete={(id) => {
+              deletePrompt({ promptId: id });
+              if (id === activePromptId) {
+                setActivePromptId(null);
+              }
+            }}
           />
           <SidebarSeparator />
           <div className="px-4 pb-4">
@@ -79,7 +103,10 @@ export default function Home() {
             </Button>
           </header>
           <main className="flex flex-1 flex-col gap-6 px-6 py-6">
-            <LearningWorkspace />
+            <LearningWorkspace
+              feedItems={feedItems ?? []}
+              onPromptCreated={setActivePromptId}
+            />
           </main>
         </div>
       </SidebarInset>

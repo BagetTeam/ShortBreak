@@ -10,30 +10,6 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { api } from "../../convex/_generated/api";
 
-const demoFeed: ShortsItem[] = [
-  {
-    id: "clip-1",
-    videoId: "vXgN3aXKk7Q",
-    title: "Color Theory in 60 Seconds",
-    topic: "Foundations",
-    duration: "0:58",
-  },
-  {
-    id: "clip-2",
-    videoId: "aN7Yk0Jc8NQ",
-    title: "Typography Pairing Mistakes",
-    topic: "Practice",
-    duration: "0:47",
-  },
-  {
-    id: "clip-3",
-    videoId: "kGx0eQZfTgM",
-    title: "Create a Bold Hero Layout",
-    topic: "Build",
-    duration: "1:02",
-  },
-];
-
 const baseMessages: ChatMessage[] = [
   {
     id: "system-1",
@@ -43,7 +19,30 @@ const baseMessages: ChatMessage[] = [
   },
 ];
 
-export function LearningWorkspace() {
+type LearningWorkspaceProps = {
+  feedItems?: Array<{
+    _id: string;
+    videoId: string;
+    topicTitle: string;
+    order: number;
+    metaData?: {
+      duration?: string;
+    };
+  }>;
+  activePromptId?: string | null;
+  onPromptCreated?: (promptId: string) => void;
+  activeIndex?: number;
+  onActiveIndexChange?: (index: number) => void;
+  onNearEnd?: () => void;
+};
+
+export function LearningWorkspace({
+  feedItems,
+  onPromptCreated,
+  activeIndex,
+  onActiveIndexChange,
+  onNearEnd,
+}: LearningWorkspaceProps) {
   const isMobile = useIsMobile();
   const [prompt, setPrompt] = React.useState("");
   const [file, setFile] = React.useState<File | null>(null);
@@ -112,6 +111,7 @@ export function LearningWorkspace() {
         prompt,
         attachmentId,
       });
+      onPromptCreated?.(promptId);
 
       const outlineItems = await generateOutline({
         promptId,
@@ -128,6 +128,8 @@ export function LearningWorkspace() {
         "success",
         "Your learning feed is ready. Scroll the playlist to begin."
       );
+      setPrompt("");
+      setFile(null);
     } catch (error) {
       updateMessageStatus(
         systemMessageId,
@@ -140,6 +142,15 @@ export function LearningWorkspace() {
       setIsSubmitting(false);
     }
   };
+
+  const shortsItems: ShortsItem[] =
+    feedItems?.map((item) => ({
+      id: item._id,
+      videoId: item.videoId,
+      title: item.topicTitle,
+      topic: "Module",
+      duration: item.metaData?.duration,
+    })) ?? [];
 
   return (
     <div className="flex flex-1 flex-col gap-6">
@@ -170,7 +181,12 @@ export function LearningWorkspace() {
             </div>
           </div>
         </div>
-        <ShortsFeed items={demoFeed} />
+        <ShortsFeed
+          items={shortsItems}
+          activeIndex={activeIndex}
+          onActiveIndexChange={onActiveIndexChange}
+          onNearEnd={onNearEnd}
+        />
       </div>
     </div>
   );
