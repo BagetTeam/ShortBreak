@@ -17,6 +17,7 @@ import type * as mutations_deletePrompt from "../mutations/deletePrompt.js";
 import type * as mutations_updatePromptProgress from "../mutations/updatePromptProgress.js";
 import type * as queries_getPrompt from "../queries/getPrompt.js";
 import type * as queries_listFeedItems from "../queries/listFeedItems.js";
+import type * as queries_listOutlineItems from "../queries/listOutlineItems.js";
 import type * as queries_listPrompts from "../queries/listPrompts.js";
 import type * as storage from "../storage.js";
 
@@ -36,6 +37,7 @@ declare const fullApi: ApiFromModules<{
   "mutations/updatePromptProgress": typeof mutations_updatePromptProgress;
   "queries/getPrompt": typeof queries_getPrompt;
   "queries/listFeedItems": typeof queries_listFeedItems;
+  "queries/listOutlineItems": typeof queries_listOutlineItems;
   "queries/listPrompts": typeof queries_listPrompts;
   storage: typeof storage;
 }>;

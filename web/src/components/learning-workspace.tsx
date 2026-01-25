@@ -21,6 +21,12 @@ type LearningWorkspaceProps = {
       duration?: string;
     };
   }>;
+  outlineItems?: Array<{
+    _id: Id<"outlineItems">;
+    title: string;
+    searchQuery: string;
+    order: number;
+  }>;
   activePromptId?: Id<"prompts"> | null;
   onPromptCreated?: (promptId: Id<"prompts">) => void;
   activeIndex?: number;
@@ -31,6 +37,7 @@ type LearningWorkspaceProps = {
 
 export function LearningWorkspace({
   feedItems,
+  outlineItems,
   activePromptId,
   onPromptCreated,
   activeIndex,
@@ -85,6 +92,8 @@ export function LearningWorkspace({
       });
       onPromptCreated?.(promptId);
 
+      // Step 1: Generate outline from Gemini
+      setStatusMessage("Generating learning outline with Gemini...");
       const outlineItems = await generateOutline({
         promptId,
         prompt,
@@ -97,15 +106,20 @@ export function LearningWorkspace({
         return;
       }
 
-      setStatusMessage("Finding matching shorts...");
+      // Step 2: Fetch initial batch of YouTube Shorts (all topics at once for infinite feed)
+      setStatusMessage("Finding videos for all topics...");
+      
       const fetchedItems = await fetchShorts({
         promptId,
-        items: outlineItems,
+        items: outlineItems, // Fetch all topics at once - each topic gets multiple videos
       });
-      if (!fetchedItems.length) {
+
+      if (fetchedItems.length === 0) {
         setErrorMessage(
-          "No videos were found for this topic. Try tweaking the prompt."
+          "No videos were found for any topics. Try tweaking the prompt."
         );
+      } else {
+        setStatusMessage(null);
       }
 
       setPrompt("");
@@ -159,6 +173,29 @@ export function LearningWorkspace({
       {errorMessage ? (
         <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700" style={{ fontFamily: 'var(--font-coming-soon)' }}>
           {errorMessage}
+        </div>
+      ) : null}
+      {outlineItems && outlineItems.length > 0 ? (
+        <div className="rounded-2xl border border-black/10 bg-white/70 px-6 py-4" style={{ fontFamily: 'var(--font-coming-soon)' }}>
+          <h3 className="text-lg font-semibold mb-3" style={{ fontFamily: 'var(--font-shizuru)' }}>
+            Learning Topics
+          </h3>
+          <ul className="space-y-2">
+            {outlineItems
+              .sort((a, b) => a.order - b.order)
+              .map((item, index) => {
+                const hasVideo = feedItems?.some(feedItem => feedItem.topicTitle === item.title);
+                return (
+                  <li key={item._id} className="flex items-start gap-3">
+                    <span className="text-sm font-medium text-black/60 min-w-[24px]">{index + 1}.</span>
+                    <span className={`text-sm ${hasVideo ? 'text-black' : 'text-black/70'}`}>
+                      {item.title}
+                      {hasVideo && <span className="ml-2 text-xs text-green-600">✓</span>}
+                    </span>
+                  </li>
+                );
+              })}
+          </ul>
         </div>
       ) : null}
       <div

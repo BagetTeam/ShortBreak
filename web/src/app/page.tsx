@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useMutation, useQuery } from "convex/react";
+import { useAction, useMutation, useQuery } from "convex/react";
 import Image from "next/image";
 
 import { HistorySidebar } from "@/components/history-sidebar";
@@ -31,6 +31,7 @@ function MainContent({
   activeIndex,
   setActiveIndex,
   feedItems,
+  outlineItems,
   isFeedLoading,
   deletePrompt,
   updatePromptProgress,
@@ -41,6 +42,7 @@ function MainContent({
   activeIndex: number;
   setActiveIndex: (index: number) => void;
   feedItems: any;
+  outlineItems: any;
   isFeedLoading: boolean;
   deletePrompt: any;
   updatePromptProgress: any;
@@ -138,6 +140,7 @@ function MainContent({
           )}
           <LearningWorkspace
             feedItems={feedItems ?? []}
+            outlineItems={outlineItems ?? []}
             activePromptId={activePromptId}
             onPromptCreated={setActivePromptId}
             isFeedLoading={isFeedLoading}
@@ -153,6 +156,55 @@ function MainContent({
                 lastWatchedIndex: index,
                 lastVideoId: activeItem?.videoId,
               });
+            }}
+            onNearEnd={async () => {
+              if (!activePromptId || !outlineItems || isLoadingMore) return;
+              
+              setIsLoadingMore(true);
+              try {
+                // Get the current video's topic
+                const currentItem = feedItems?.[activeIndex];
+                if (!currentItem) return;
+                
+                // Find which outline item this video belongs to
+                const currentTopic = outlineItems.find(
+                  item => item.title === currentItem.topicTitle
+                );
+                
+                if (currentTopic) {
+                  // Fetch more videos for the current topic
+                  await fetchShorts({
+                    promptId: activePromptId,
+                    items: [{
+                      title: currentTopic.title,
+                      searchQuery: currentTopic.searchQuery,
+                      order: currentTopic.order,
+                      outlineItemId: currentTopic._id,
+                    }],
+                  });
+                } else if (outlineItems.length > 0) {
+                  // If we can't find the current topic, cycle to next topic
+                  const currentTopicIndex = outlineItems.findIndex(
+                    item => item.title === currentItem.topicTitle
+                  );
+                  const nextTopicIndex = (currentTopicIndex + 1) % outlineItems.length;
+                  const nextTopic = outlineItems[nextTopicIndex];
+                  
+                  await fetchShorts({
+                    promptId: activePromptId,
+                    items: [{
+                      title: nextTopic.title,
+                      searchQuery: nextTopic.searchQuery,
+                      order: nextTopic.order,
+                      outlineItemId: nextTopic._id,
+                    }],
+                  });
+                }
+              } catch (error) {
+                console.error("Error loading more videos:", error);
+              } finally {
+                setIsLoadingMore(false);
+              }
             }}
           />
         </main>
@@ -185,11 +237,17 @@ export default function Home() {
     api.queries.listFeedItems.listFeedItems,
     activePromptId ? { promptId: activePromptId } : "skip",
   );
+  const outlineItems = useQuery(
+    api.queries.listOutlineItems.listOutlineItems,
+    activePromptId ? { promptId: activePromptId } : "skip",
+  );
   const isFeedLoading = activePromptId !== null && feedItems === undefined;
   const deletePrompt = useMutation(api.mutations.deletePrompt.deletePrompt);
   const updatePromptProgress = useMutation(
     api.mutations.updatePromptProgress.updatePromptProgress,
   );
+  const fetchShorts = useAction(api.actions.fetchShorts.fetchShorts);
+  const [isLoadingMore, setIsLoadingMore] = React.useState(false);
 
   React.useEffect(() => {
     if (!prompts || !activePromptId) {
@@ -266,6 +324,7 @@ export default function Home() {
         activeIndex={activeIndex}
         setActiveIndex={setActiveIndex}
         feedItems={feedItems}
+        outlineItems={outlineItems}
         isFeedLoading={isFeedLoading}
         deletePrompt={deletePrompt}
         updatePromptProgress={updatePromptProgress}

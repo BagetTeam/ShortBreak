@@ -37,7 +37,7 @@ export const fetchShorts = action({
         url.search = new URLSearchParams({
           key: apiKey,
           part: "snippet",
-          maxResults: "1",
+          maxResults: "10", // Fetch 10 videos per topic for infinite feed
           type: "video",
           videoDuration: "short",
           q: item.searchQuery,
@@ -45,41 +45,44 @@ export const fetchShorts = action({
 
         const response = await fetch(url);
         if (!response.ok) {
-          return null;
+          return [];
         }
 
         const data = await response.json();
-        const candidate = data?.items?.[0];
-        const videoId = candidate?.id?.videoId as string | undefined;
-        if (!videoId) {
-          return null;
-        }
+        const items = data?.items || [];
+        
+        return items
+          .map((candidate: any) => {
+            const videoId = candidate?.id?.videoId as string | undefined;
+            if (!videoId) {
+              return null;
+            }
 
-        const channelTitle =
-          typeof candidate?.snippet?.channelTitle === "string"
-            ? candidate.snippet.channelTitle
-            : undefined;
-        const publishedAt =
-          typeof candidate?.snippet?.publishedAt === "string"
-            ? candidate.snippet.publishedAt
-            : undefined;
+            const channelTitle =
+              typeof candidate?.snippet?.channelTitle === "string"
+                ? candidate.snippet.channelTitle
+                : undefined;
+            const publishedAt =
+              typeof candidate?.snippet?.publishedAt === "string"
+                ? candidate.snippet.publishedAt
+                : undefined;
 
-        return {
-          outlineItemId: item.outlineItemId,
-          videoId,
-          topicTitle: item.title,
-          order: item.order,
-          metaData: {
-            channelTitle,
-            publishedAt,
-          },
-        };
+            return {
+              outlineItemId: item.outlineItemId,
+              videoId,
+              topicTitle: item.title,
+              order: item.order,
+              metaData: {
+                channelTitle,
+                publishedAt,
+              },
+            };
+          })
+          .filter((item: any): item is NonNullable<typeof item> => item !== null);
       }),
     );
 
-    const feedItems = results.filter(
-      (item): item is NonNullable<typeof item> => item !== null,
-    );
+    const feedItems = results.flat();
 
     await ctx.runMutation(api.mutations.appendFeedItems.appendFeedItems, {
       promptId: args.promptId,

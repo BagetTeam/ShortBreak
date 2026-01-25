@@ -49,18 +49,18 @@ export function HistorySidebar({
                 <SidebarMenuSkeleton key={`history-skeleton-${index}`} />
               ))
             : prompts.map((prompt) => (
-                <SidebarMenuItem key={prompt.id} className="py-1">
+                <SidebarMenuItem key={prompt.id} className="py-1 w-full">
                   <SidebarMenuButton
                     isActive={prompt.isActive}
                     onClick={() => onSelect?.(prompt.id)}
-                    className="items-start py-3 px-3 min-h-[60px]"
+                    className="items-start py-3 px-3 min-h-[60px] h-auto w-full !overflow-visible [&>span:last-child]:!truncate-0"
                   >
-                    <div className="flex flex-col text-left gap-1 flex-1" style={{ fontFamily: 'var(--font-coming-soon)' }}>
-                      <span className="font-medium text-foreground text-sm leading-tight">
+                    <div className="flex flex-col text-left gap-1 flex-1 min-w-0 w-full overflow-visible" style={{ fontFamily: 'var(--font-coming-soon)' }}>
+                      <span className="font-medium text-foreground text-sm leading-tight break-words whitespace-normal overflow-visible pb-1">
                         {prompt.title}
                       </span>
                       {prompt.subtitle ? (
-                        <span className="text-xs text-muted-foreground leading-tight">
+                        <span className="text-xs text-muted-foreground leading-tight break-words whitespace-normal overflow-visible">
                           {prompt.subtitle}
                         </span>
                       ) : null}
@@ -70,7 +70,7 @@ export function HistorySidebar({
                     showOnHover
                     onClick={() => onDelete?.(prompt.id)}
                     aria-label="Delete prompt"
-                    className="mr-2"
+                    className="mr-2 flex-shrink-0"
                   >
                     <Trash2 className="h-4 w-4" />
                 </SidebarMenuAction>
