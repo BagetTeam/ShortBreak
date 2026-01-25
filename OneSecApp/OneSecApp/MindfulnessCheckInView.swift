@@ -17,7 +17,7 @@ struct MindfulnessCheckInView: View {
     @State private var timer: Timer?
     
     // Placeholder URL for ShortBreak web app
-    private let shortBreakURL = "https://github.com/BagetTeam"
+    private let shortBreakURL = "https://www.pleasestopscrolling.tech/"
     
     // Beige background color
     private let beigeBackground = Color(red: 0.96, green: 0.94, blue: 0.90)
