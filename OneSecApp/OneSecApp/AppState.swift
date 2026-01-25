@@ -36,7 +36,7 @@ class AppState: ObservableObject {
     private let dbManager = DatabaseManager.shared
     
     // Time required between claims (180 seconds = 3 min for testing, use 3600 for 1 hour)
-    let claimCooldown: Double = 180
+    let claimCooldown: Double = 15
     
     init() {
         shouldShowMindfulness = false

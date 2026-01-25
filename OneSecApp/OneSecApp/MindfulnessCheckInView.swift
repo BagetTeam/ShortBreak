@@ -215,24 +215,35 @@ struct MindfulnessCheckInView: View {
                 // Two large vertically stacked cards
                 VStack(spacing: 16) {
                     // First card: Continue to Instagram
+                    let hasTime = (appState.screenTimeData?.remainingScreenTime ?? 0) > 0
+                    
                     Button(action: {
-                        handleContinueToInsta()
+                        if hasTime {
+                            handleContinueToInsta()
+                        }
                     }) {
                         VStack(spacing: 4) {
-                            Text("Continue on Insta")
+                            Text(hasTime ? "Continue on Insta" : "No time available")
                                 .font(comingSoonFont(size: 18))
-                                .foregroundColor(.black)
+                                .foregroundColor(hasTime ? .black : .black.opacity(0.4))
+                            
+                            if !hasTime {
+                                Text("Claim time above to continue")
+                                    .font(comingSoonFont(size: 12))
+                                    .foregroundColor(.black.opacity(0.3))
+                            }
                         }
                         .frame(maxWidth: .infinity)
                         .frame(height: 70)
-                        .background(softWhite)
+                        .background(hasTime ? softWhite : softWhite.opacity(0.6))
                         .cornerRadius(30)
                         .overlay(
                             RoundedRectangle(cornerRadius: 30)
-                                .stroke(Color.black, lineWidth: 1.5)
+                                .stroke(hasTime ? Color.black : Color.black.opacity(0.3), lineWidth: 1.5)
                         )
-                        .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: 4)
+                        .shadow(color: Color.black.opacity(hasTime ? 0.1 : 0.03), radius: 8, x: 0, y: 4)
                     }
+                    .disabled(!hasTime)
                     .padding(.horizontal, 40)
                     
                     // Second card: ShortBreak Website
