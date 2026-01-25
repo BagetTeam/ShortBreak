@@ -2,93 +2,244 @@
 //  ContentView.swift
 //  OneSecApp
 //
-//  Main content view that shows mindfulness screen or home
+//  Main content view - minimalist home screen
 //
 
 import SwiftUI
+import UIKit
+import CoreText
 
 struct ContentView: View {
-    @EnvironmentObject var appState: AppState
-    
     var body: some View {
-        ZStack {
-            if appState.shouldShowMindfulness {
-                MindfulnessCheckInView()
-            } else {
-                HomeView()
-            }
-        }
+        HomeView()
     }
 }
 
 struct HomeView: View {
-    @State private var showSetupGuide = false
-    @AppStorage("hasCompletedSetup") private var hasCompletedSetup = false
+    // Beige background color
+    private let beigeBackground = Color(red: 0.96, green: 0.94, blue: 0.90)
+    // Soft white for cards
+    private let softWhite = Color(red: 0.99, green: 0.99, blue: 0.98)
+    // Light grey for borders
+    private let lightGrey = Color(red: 0.85, green: 0.85, blue: 0.85)
     
-    var body: some View {
-        VStack(spacing: 30) {
-            Spacer()
-            
-            Image(systemName: "leaf.fill")
-                .font(.system(size: 60))
-                .foregroundColor(.green)
-            
-            Text("One Sec")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-            
-            Text("Take a moment before you scroll")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-            
-            Spacer()
-            
-            // Setup section
-            VStack(spacing: 16) {
-                if !hasCompletedSetup {
-                    Text("Complete setup to intercept Instagram")
-                        .font(.headline)
-                        .foregroundColor(.primary)
-                    
-                    Button(action: {
-                        showSetupGuide = true
-                    }) {
-                        HStack {
-                            Image(systemName: "gear")
-                            Text("Setup Shortcut Automation")
-                        }
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.green)
-                        .cornerRadius(12)
-                    }
-                    .padding(.horizontal, 40)
-                } else {
-                    HStack {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundColor(.green)
-                        Text("Setup complete!")
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    Button(action: {
-                        showSetupGuide = true
-                    }) {
-                        Text("View Setup Guide Again")
-                            .font(.subheadline)
-                            .foregroundColor(.blue)
-                    }
+    init() {
+        // Register fonts from bundle if not already registered
+        registerFonts()
+    }
+    
+    private func registerFonts() {
+        // Try multiple paths for Coming Soon font
+        let comingSoonPaths = [
+            ("ComingSoon-Regular", "ttf", "Fonts"),
+            ("ComingSoon-Regular", "ttf", nil),
+            ("ComingSoon", "ttf", "Fonts"),
+            ("ComingSoon", "ttf", nil)
+        ]
+        
+        for (name, ext, subdir) in comingSoonPaths {
+            if let url = Bundle.main.url(forResource: name, withExtension: ext, subdirectory: subdir) {
+                if let fontDataProvider = CGDataProvider(url: url as CFURL),
+                   let font = CGFont(fontDataProvider) {
+                    var error: Unmanaged<CFError>?
+                    CTFontManagerRegisterGraphicsFont(font, &error)
+                    break
                 }
             }
-            .padding(.bottom, 40)
         }
-        .padding()
-        .sheet(isPresented: $showSetupGuide, onDismiss: {
-            hasCompletedSetup = true
-        }) {
-            SetupGuideView()
+        
+        // Try multiple paths for Shizuru font
+        let shizuruPaths = [
+            ("Shizuru-Regular", "ttf", "Fonts"),
+            ("Shizuru-Regular", "ttf", nil),
+            ("Shizuru", "ttf", "Fonts"),
+            ("Shizuru", "ttf", nil)
+        ]
+        
+        for (name, ext, subdir) in shizuruPaths {
+            if let url = Bundle.main.url(forResource: name, withExtension: ext, subdirectory: subdir) {
+                if let fontDataProvider = CGDataProvider(url: url as CFURL),
+                   let font = CGFont(fontDataProvider) {
+                    var error: Unmanaged<CFError>?
+                    CTFontManagerRegisterGraphicsFont(font, &error)
+                    break
+                }
+            }
+        }
+    }
+    
+    // Helper function to get Comfortaa font with fallback
+    private func comfortaaFont(size: CGFloat, weight: Font.Weight = .regular) -> Font {
+        // Try different font name variations for Comfortaa
+        let fontNames: [String]
+        if weight == .bold {
+            fontNames = ["Comfortaa-Bold", "Comfortaa Bold", "Comfortaa"]
+        } else {
+            fontNames = ["Comfortaa-Regular", "Comfortaa Regular", "Comfortaa"]
+        }
+        
+        for fontName in fontNames {
+            if let font = UIFont(name: fontName, size: size) {
+                return Font(font)
+            }
+        }
+        
+        // If Comfortaa not found, try to find any Comfortaa font and apply weight
+        if let comfortaaFont = UIFont(name: "Comfortaa", size: size) {
+            let descriptor = comfortaaFont.fontDescriptor
+            if weight == .bold {
+                if let boldDescriptor = descriptor.withSymbolicTraits(.traitBold) {
+                    return Font(UIFont(descriptor: boldDescriptor, size: size) ?? comfortaaFont)
+                }
+            }
+            return Font(comfortaaFont)
+        }
+        
+        // Fallback to system rounded font
+        return .system(size: size, design: .rounded)
+            .weight(weight)
+    }
+    
+    // Helper function to get Coming Soon font with fallback
+    private func comingSoonFont(size: CGFloat) -> Font {
+        // Try many variations of the font name
+        let fontNames = [
+            "Coming Soon",
+            "ComingSoon",
+            "ComingSoon-Regular",
+            "ComingSoon Regular",
+            "ComingSoonRegular"
+        ]
+        
+        for fontName in fontNames {
+            if let font = UIFont(name: fontName, size: size) {
+                return Font(font)
+            }
+        }
+        
+        // Try to find any font containing "Coming" in the family name
+        for family in UIFont.familyNames.sorted() {
+            if family.lowercased().contains("coming") {
+                if let font = UIFont(name: family, size: size) {
+                    return Font(font)
+                }
+                // Try with Regular suffix
+                if let font = UIFont(name: "\(family)-Regular", size: size) {
+                    return Font(font)
+                }
+            }
+        }
+        
+        // Fallback to system font
+        return .system(size: size)
+    }
+    
+    // Helper function to get Shizuru font with fallback
+    private func shizuruFont(size: CGFloat) -> Font {
+        // Try many variations of the font name
+        let fontNames = [
+            "Shizuru",
+            "Shizuru-Regular",
+            "Shizuru Regular",
+            "ShizuruRegular"
+        ]
+        
+        for fontName in fontNames {
+            if let font = UIFont(name: fontName, size: size) {
+                return Font(font)
+            }
+        }
+        
+        // Try to find any font containing "Shizuru" in the family name
+        for family in UIFont.familyNames.sorted() {
+            if family.lowercased().contains("shizuru") {
+                if let font = UIFont(name: family, size: size) {
+                    return Font(font)
+                }
+                // Try with Regular suffix
+                if let font = UIFont(name: "\(family)-Regular", size: size) {
+                    return Font(font)
+                }
+            }
+        }
+        
+        // Fallback to system font with rounded design
+        return .system(size: size, design: .rounded)
+    }
+    
+    var body: some View {
+        ZStack {
+            // Beige background
+            beigeBackground
+                .ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                // ShortBreak title at the very top
+                Text("ShortBreak")
+                    .font(shizuruFont(size: 28))
+                    .foregroundColor(.black)
+                    .padding(.top, 60)
+                
+                // Reindeer image below title
+                Image("Reindeer")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(maxWidth: 200, maxHeight: 200)
+                    .padding(.top, 20)
+                
+                // Description text below reindeer
+                Text("access instagram with limited time or scroll a custom educational feed")
+                    .font(comingSoonFont(size: 16))
+                    .foregroundColor(.black.opacity(0.7))
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 40)
+                    .padding(.top, 24)
+                
+                Spacer()
+                    .frame(minHeight: 40)
+                
+                // Two large vertically stacked cards
+                VStack(spacing: 24) {
+                    // First card: Continue to Instagram
+                    Button(action: {
+                        // Handle Instagram action
+                    }) {
+                        Text("Continue to Instagram")
+                            .font(comfortaaFont(size: 20, weight: .bold))
+                            .foregroundColor(.black)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 80)
+                            .background(softWhite)
+                            .cornerRadius(30)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 30)
+                                    .stroke(lightGrey, lineWidth: 1)
+                            )
+                            .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: 4)
+                    }
+                    .padding(.horizontal, 40)
+                    
+                    // Second card: Shortbreak Website
+                    Button(action: {
+                        // Handle Shortbreak action
+                    }) {
+                        Text("Shortbreak Website")
+                            .font(comfortaaFont(size: 20, weight: .bold))
+                            .foregroundColor(.black)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 80)
+                            .background(softWhite)
+                            .cornerRadius(30)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 30)
+                                    .stroke(lightGrey, lineWidth: 1)
+                            )
+                            .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: 4)
+                    }
+                    .padding(.horizontal, 40)
+                }
+                .padding(.bottom, 80)
+            }
         }
     }
 }
