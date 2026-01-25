@@ -3,6 +3,7 @@
 //  OneSecApp
 //
 //  Manages app state using clipboard-based bypass
+//  Manages app state using clipboard-based bypass
 //
 //  ARCHITECTURE:
 //  1. User opens Instagram → Automation triggers → Shortcut runs
@@ -51,6 +52,7 @@ class AppState: ObservableObject {
     }
     
     /// Called when app is opened via URL scheme (onesec://?target=instagram://)
+    /// Called when app is opened via URL scheme (onesec://?target=instagram://)
     func handleURL(_ url: URL) {
         guard url.scheme == "onesec" else { return }
         
@@ -68,6 +70,8 @@ class AppState: ObservableObject {
             targetApp = target
         } else {
             targetApp = "instagram://"
+        } else {
+            targetApp = "instagram://"
         }
         
         print("🧘 Showing mindfulness screen for: \(targetApp)")
@@ -78,6 +82,9 @@ class AppState: ObservableObject {
     
     /// Called when user taps "Continue to Instagram"
     func allowAccess(to app: String) {
+        // Write bypass key to clipboard
+        UIPasteboard.general.string = bypassKey
+        print("📋 Wrote '\(bypassKey)' to clipboard")
         // Write bypass key to clipboard
         UIPasteboard.general.string = bypassKey
         print("📋 Wrote '\(bypassKey)' to clipboard")
