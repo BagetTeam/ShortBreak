@@ -6,20 +6,25 @@ export const getUserByClerkIdFromDb = async (
   ctx: QueryCtx | MutationCtx,
   clerkId: string,
 ) => {
-  const user = await ctx.db
-    .query("users")
-    .withIndex("by_clerk_id", (q) => q.eq("clerkId", clerkId))
-    .unique();
+  const user = await getUserByClerkIdOptional(ctx, clerkId);
   if (!user) {
     throw new Error("User not found");
   }
   return user;
 };
 
-export const getOrCreateUser = async (
-  ctx: MutationCtx,
-  clerkId?: string,
+export const getUserByClerkIdOptional = async (
+  ctx: QueryCtx | MutationCtx,
+  clerkId: string,
 ) => {
+  const user = await ctx.db
+    .query("users")
+    .withIndex("by_clerk_id", (q) => q.eq("clerkId", clerkId))
+    .unique();
+  return user ?? null;
+};
+
+export const getOrCreateUser = async (ctx: MutationCtx, clerkId?: string) => {
   const resolvedClerkId = clerkId ?? (await getClerkId(ctx));
   const existing = await ctx.db
     .query("users")
