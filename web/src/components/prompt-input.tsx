@@ -43,6 +43,7 @@ export function PromptInput({
       <div className="flex flex-col gap-4">
         <textarea
           className="min-h-[120px] w-full resize-none rounded-2xl border border-border/60 bg-white px-4 py-3 text-sm leading-relaxed text-foreground shadow-inner outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          style={{ fontFamily: 'var(--font-coming-soon)' }}
           value={value}
           placeholder={placeholder}
           onChange={(event) => onChange(event.target.value)}
@@ -56,28 +57,35 @@ export function PromptInput({
               className="hidden"
               onChange={handleFileChange}
             />
-            <Button
+            <button
               type="button"
-              variant="outline"
-              className="rounded-full"
               onClick={() => fileInputRef.current?.click()}
+              className="rounded-[30px] px-6 py-3 text-base font-normal text-black border-[1.5px] border-black shadow-sm hover:shadow-md transition-shadow"
+              style={{ 
+                fontFamily: 'var(--font-coming-soon)',
+                backgroundColor: '#FCFCFA'
+              }}
             >
               Attach PDF
-            </Button>
+            </button>
             {fileName ? (
-              <span className="text-xs text-muted-foreground">
+              <span className="text-xs text-muted-foreground" style={{ fontFamily: 'var(--font-coming-soon)' }}>
                 {fileName}
               </span>
             ) : null}
           </div>
-          <Button
+          <button
             type="button"
-            className="rounded-full"
             onClick={onSubmit}
             disabled={isSubmitting}
+            className="rounded-[30px] px-6 py-3 text-base font-normal text-black border-[1.5px] border-black shadow-sm hover:shadow-md transition-shadow disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ 
+              fontFamily: 'var(--font-coming-soon)',
+              backgroundColor: '#FCFCFA'
+            }}
           >
             {isSubmitting ? "Building..." : "Generate Feed"}
-          </Button>
+          </button>
         </div>
       </div>
     </div>

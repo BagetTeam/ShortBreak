@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useMutation, useQuery } from "convex/react";
+import Image from "next/image";
 
 import { HistorySidebar } from "@/components/history-sidebar";
 import { LearningWorkspace } from "@/components/learning-workspace";
@@ -16,9 +17,89 @@ import {
   SidebarRail,
   SidebarSeparator,
   SidebarTrigger,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import type { Id } from "../../convex/_generated/dataModel";
 import { api } from "../../convex/_generated/api";
+
+function MainContent({
+  prompts,
+  activePromptId,
+  setActivePromptId,
+  activeIndex,
+  setActiveIndex,
+  feedItems,
+  isFeedLoading,
+  deletePrompt,
+  updatePromptProgress,
+}: {
+  prompts: any;
+  activePromptId: Id<"prompts"> | null;
+  setActivePromptId: (id: Id<"prompts"> | null) => void;
+  activeIndex: number;
+  setActiveIndex: (index: number) => void;
+  feedItems: any;
+  isFeedLoading: boolean;
+  deletePrompt: any;
+  updatePromptProgress: any;
+}) {
+  const { state } = useSidebar();
+
+  return (
+    <SidebarInset className="!m-0 !rounded-none !shadow-none flex flex-col h-screen overflow-hidden">
+      <div className="flex h-full flex-col w-full" style={{ backgroundColor: '#F5F0E6' }}>
+        <header className="flex-shrink-0 flex flex-wrap items-center justify-between gap-4 border-b border-black/10 px-6 pt-3 pb-4 relative min-h-[60px]" style={{ backgroundColor: '#F5F0E6' }}>
+          {/* Sidebar trigger button - visible when sidebar is collapsed */}
+          {state === "collapsed" && (
+            <div className="absolute top-4 left-6 z-20">
+              <SidebarTrigger className="bg-transparent hover:bg-white rounded-lg transition-colors" />
+            </div>
+          )}
+          {/* ShortBreak title - only show when sidebar is collapsed */}
+          <div className="space-y-1 ml-auto">
+            <h2 
+              className={`text-2xl font-normal text-black ${state === "collapsed" ? "visible" : "invisible"}`}
+              style={{ fontFamily: 'var(--font-shizuru)' }}
+            >
+              ShortBreak
+            </h2>
+          </div>
+        </header>
+        <main className="flex-1 overflow-y-auto flex flex-col gap-6 px-6 py-6 relative">
+          {/* Bear image in top right of main container */}
+          <div className="absolute top-6 right-6 z-10">
+            <Image
+              src="/bear.png"
+              alt="Bear"
+              width={120}
+              height={120}
+              className="object-contain"
+            />
+          </div>
+          <LearningWorkspace
+            feedItems={feedItems ?? []}
+            activePromptId={activePromptId}
+            onPromptCreated={setActivePromptId}
+            isFeedLoading={isFeedLoading}
+            activeIndex={activeIndex}
+            onActiveIndexChange={(index) => {
+              setActiveIndex(index);
+              if (!activePromptId) {
+                return;
+              }
+              const activeItem = feedItems?.[index];
+              updatePromptProgress({
+                promptId: activePromptId,
+                lastWatchedIndex: index,
+                lastVideoId: activeItem?.videoId,
+              });
+            }}
+          />
+        </main>
+      </div>
+    </SidebarInset>
+  );
+}
 
 export default function Home() {
   const prompts = useQuery(api.queries.listPrompts.listPrompts);
@@ -62,86 +143,72 @@ export default function Home() {
 
   return (
     <SidebarProvider>
-      <Sidebar collapsible="icon" variant="inset">
-        <SidebarHeader className="gap-3 border-b px-4 py-5">
+      <Sidebar collapsible="offcanvas" variant="inset" style={{ backgroundColor: '#F5F0E6' }}>
+        <SidebarHeader className="gap-3 border-b px-6 pt-2 pb-3" style={{ backgroundColor: '#F5F0E6' }}>
           <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs uppercase tracking-[0.35em] text-muted-foreground">
+            <div className="space-y-1">
+              <h1 
+                className="text-2xl font-normal text-black"
+                style={{ fontFamily: 'var(--font-shizuru)' }}
+              >
                 ShortBreak
-              </p>
-              <h1 className="text-lg font-semibold text-foreground">
-                Learning Feed
               </h1>
             </div>
             <SidebarTrigger />
           </div>
         </SidebarHeader>
-        <SidebarContent>
-          <HistorySidebar
-            prompts={promptHistory}
-            isLoading={!prompts}
-            onSelect={setActivePromptId}
-            onDelete={(id) => {
-              deletePrompt({ promptId: id });
-              if (id === activePromptId) {
-                setActivePromptId(null);
-              }
-            }}
-          />
+        <SidebarContent style={{ backgroundColor: '#F5F0E6' }} className="flex flex-col">
+          <div className="flex-1 overflow-y-auto min-h-0">
+            <HistorySidebar
+              prompts={promptHistory}
+              isLoading={!prompts}
+              onSelect={setActivePromptId}
+              onDelete={(id) => {
+                deletePrompt({ promptId: id });
+                if (id === activePromptId) {
+                  setActivePromptId(null);
+                }
+              }}
+            />
+          </div>
           <SidebarSeparator />
-          <div className="px-4 pb-4">
-            <Button
-              variant="outline"
-              className="w-full rounded-full"
+          <div className="px-4 pb-4 flex-shrink-0">
+            <button
               onClick={() => setActivePromptId(null)}
+              className="w-full rounded-[30px] px-6 py-5 text-lg font-normal text-black border-[1.5px] border-black shadow-sm hover:shadow-md transition-shadow"
+              style={{ 
+                fontFamily: 'var(--font-coming-soon)',
+                backgroundColor: '#FCFCFA'
+              }}
             >
               Start New Prompt
-            </Button>
+            </button>
           </div>
         </SidebarContent>
-        <SidebarFooter className="border-t px-4 py-4">
-          <Button className="w-full">Start a Session</Button>
+        <SidebarFooter className="border-t px-4 py-4" style={{ backgroundColor: '#F5F0E6' }}>
+          <button
+            className="w-full rounded-[30px] px-6 py-5 text-lg font-normal text-black border-[1.5px] border-black shadow-sm hover:shadow-md transition-shadow"
+            style={{ 
+              fontFamily: 'var(--font-coming-soon)',
+              backgroundColor: '#FCFCFA'
+            }}
+          >
+            Start a Session
+          </button>
         </SidebarFooter>
         <SidebarRail />
       </Sidebar>
-      <SidebarInset>
-        <div className="flex h-full min-h-svh flex-col bg-[radial-gradient(circle_at_top,_#f7f2ff,_#fff_45%,_#f7f9ff_100%)]">
-          <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border/60 px-6 py-5">
-            <div className="space-y-1">
-              <p className="text-xs uppercase tracking-[0.35em] text-muted-foreground">
-                Curriculum
-              </p>
-              <h2 className="text-2xl font-semibold text-foreground">
-                Design Your Next Learning Sprint
-              </h2>
-            </div>
-            <Button variant="outline" className="rounded-full">
-              View Queue
-            </Button>
-          </header>
-          <main className="flex flex-1 flex-col gap-6 px-6 py-6">
-            <LearningWorkspace
-              feedItems={feedItems ?? []}
-              activePromptId={activePromptId}
-              onPromptCreated={setActivePromptId}
-              isFeedLoading={isFeedLoading}
-              activeIndex={activeIndex}
-              onActiveIndexChange={(index) => {
-                setActiveIndex(index);
-                if (!activePromptId) {
-                  return;
-                }
-                const activeItem = feedItems?.[index];
-                updatePromptProgress({
-                  promptId: activePromptId,
-                  lastWatchedIndex: index,
-                  lastVideoId: activeItem?.videoId,
-                });
-              }}
-            />
-          </main>
-        </div>
-      </SidebarInset>
+      <MainContent
+        prompts={prompts}
+        activePromptId={activePromptId}
+        setActivePromptId={setActivePromptId}
+        activeIndex={activeIndex}
+        setActiveIndex={setActiveIndex}
+        feedItems={feedItems}
+        isFeedLoading={isFeedLoading}
+        deletePrompt={deletePrompt}
+        updatePromptProgress={updatePromptProgress}
+      />
     </SidebarProvider>
   );
 }
