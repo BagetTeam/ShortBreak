@@ -3,6 +3,7 @@
 //  OneSecApp
 //
 //  The choice screen - continue to Instagram or go to ShortBreak
+//  The choice screen - continue to Instagram or go to ShortBreak
 //
 
 import SwiftUI
@@ -406,10 +407,18 @@ struct MindfulnessCheckInView: View {
     
     private func handleContinueToInsta() {
         // Same logic as before - set bypass and open Instagram
+    private func handleContinueToInsta() {
+        // Same logic as before - set bypass and open Instagram
         let targetApp = appState.targetApp.isEmpty ? "instagram://" : appState.targetApp
         appState.allowAccess(to: targetApp)
     }
     
+    private func handleGoToShortBreak() {
+        // Open ShortBreak web app
+        if let url = URL(string: shortBreakURL) {
+            UIApplication.shared.open(url)
+        }
+        // Dismiss the mindfulness screen
     private func handleGoToShortBreak() {
         // Open ShortBreak web app
         if let url = URL(string: shortBreakURL) {
