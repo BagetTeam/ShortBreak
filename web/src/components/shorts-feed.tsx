@@ -129,7 +129,7 @@ export function ShortsFeed({
                       className="h-full w-full"
                       src={`https://www.youtube.com/embed/${item.videoId}?autoplay=${
                         isActive ? "1" : "0"
-                      }&mute=1&playsinline=1&controls=0&rel=0`}
+                      }&mute=0&playsinline=1&controls=0&rel=0`}
                       allow="autoplay; encrypted-media"
                       allowFullScreen
                     />
