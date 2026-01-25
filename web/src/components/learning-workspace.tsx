@@ -34,6 +34,7 @@ type LearningWorkspaceProps = {
   activeIndex?: number;
   onActiveIndexChange?: (index: number) => void;
   onNearEnd?: () => void;
+  isFeedLoading?: boolean;
 };
 
 export function LearningWorkspace({
@@ -42,6 +43,7 @@ export function LearningWorkspace({
   activeIndex,
   onActiveIndexChange,
   onNearEnd,
+  isFeedLoading = false,
 }: LearningWorkspaceProps) {
   const isMobile = useIsMobile();
   const [prompt, setPrompt] = React.useState("");
@@ -186,6 +188,7 @@ export function LearningWorkspace({
           activeIndex={activeIndex}
           onActiveIndexChange={onActiveIndexChange}
           onNearEnd={onNearEnd}
+          isLoading={isFeedLoading}
         />
       </div>
     </div>

@@ -29,6 +29,7 @@ export default function Home() {
     api.queries.listFeedItems,
     activePromptId ? { promptId: activePromptId } : "skip"
   );
+  const isFeedLoading = activePromptId !== null && feedItems === undefined;
   const deletePrompt = useMutation(api.mutations.deletePrompt);
   const updatePromptProgress = useMutation(api.mutations.updatePromptProgress);
 
@@ -119,6 +120,7 @@ export default function Home() {
             <LearningWorkspace
               feedItems={feedItems ?? []}
               onPromptCreated={setActivePromptId}
+              isFeedLoading={isFeedLoading}
               activeIndex={activeIndex}
               onActiveIndexChange={(index) => {
                 setActiveIndex(index);

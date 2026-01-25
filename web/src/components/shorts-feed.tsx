@@ -3,6 +3,7 @@
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export type ShortsItem = {
   id: string;
@@ -17,6 +18,7 @@ type ShortsFeedProps = {
   activeIndex?: number;
   onActiveIndexChange?: (index: number) => void;
   onNearEnd?: () => void;
+  isLoading?: boolean;
   className?: string;
 };
 
@@ -25,6 +27,7 @@ export function ShortsFeed({
   activeIndex: activeIndexProp,
   onActiveIndexChange,
   onNearEnd,
+  isLoading = false,
   className,
 }: ShortsFeedProps) {
   const [activeIndex, setActiveIndex] = React.useState(activeIndexProp ?? 0);
@@ -98,7 +101,22 @@ export function ShortsFeed({
         </span>
       </div>
       <div ref={scrollRef} className="flex-1 overflow-y-auto pr-2">
-        {items.length === 0 ? (
+        {isLoading ? (
+          <div className="space-y-4">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div
+                key={`feed-skeleton-${index}`}
+                className="overflow-hidden rounded-2xl border border-border/60 bg-white"
+              >
+                <Skeleton className="aspect-[9/16] w-full" />
+                <div className="space-y-2 px-4 py-4">
+                  <Skeleton className="h-3 w-24" />
+                  <Skeleton className="h-5 w-3/4" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : items.length === 0 ? (
           <div className="flex h-full items-center justify-center rounded-2xl border border-dashed border-border/60 p-8 text-center text-sm text-muted-foreground">
             Waiting for the first batch of clips.
           </div>
