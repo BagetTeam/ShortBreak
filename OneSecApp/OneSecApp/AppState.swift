@@ -87,6 +87,7 @@ class AppState: ObservableObject {
         
         print("🧘 Showing mindfulness screen for: \(targetApp)")
         shouldShowSessionSummary = false  // Reset session summary when opening for entry
+        shouldShowSessionSummary = false  // Reset session summary when opening for entry
         shouldShowMindfulness = true
         refreshScreenTimeData()
         refreshScreenTimeData()
@@ -129,7 +130,12 @@ class AppState: ObservableObject {
         if let duration = dbManager.recordInstagramExit() {
             print("⏱️ Instagram session ended. Duration: \(Int(duration)) seconds")
             lastSessionDuration = duration
+            lastSessionDuration = duration
             refreshScreenTimeData()
+            
+            // Show session summary screen
+            shouldShowMindfulness = false
+            shouldShowSessionSummary = true
             
             // Show session summary screen
             shouldShowMindfulness = false
@@ -139,6 +145,9 @@ class AppState: ObservableObject {
             if dbManager.hasExceededScreenTime() {
                 print("⚠️ User has exceeded allocated screen time!")
             }
+        } else {
+            // No entry time was recorded, just refresh data
+            refreshScreenTimeData()
         } else {
             // No entry time was recorded, just refresh data
             refreshScreenTimeData()
