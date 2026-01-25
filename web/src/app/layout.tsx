@@ -7,12 +7,16 @@ const comingSoon = Coming_Soon({
   variable: "--font-coming-soon",
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
+  fallback: ["system-ui", "arial"],
 });
 
 const shizuru = Shizuru({
   variable: "--font-shizuru",
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
+  fallback: ["system-ui", "cursive"],
 });
 
 export const metadata: Metadata = {

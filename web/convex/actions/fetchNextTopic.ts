@@ -9,7 +9,22 @@ export const fetchNextTopic = action({
   args: {
     promptId: v.id("prompts"),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<{
+    status: "success" | "no_topics" | "needs_expansion" | "error";
+    topicTitle?: string;
+    topicOrder?: number;
+    items: Array<{
+      outlineItemId: string;
+      videoId: string;
+      topicTitle: string;
+      order: number;
+      metaData?: {
+        channelTitle?: string;
+        publishedAt?: string;
+      };
+    }>;
+    hasMoreTopics?: boolean;
+  }> => {
     const apiKey = process.env.YOUTUBE_API_KEY;
     if (!apiKey) {
       throw new Error("Missing YOUTUBE_API_KEY.");

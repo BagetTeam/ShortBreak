@@ -234,7 +234,7 @@ export const expandOutline = action({
 
     return {
       status: "success",
-      expansionRound: newExpansionCount,
+      expansionRound: newExpansionCount ?? undefined,
       items: newItems.map((item, index) => ({
         ...item,
         outlineItemId: outlineIds[index],
