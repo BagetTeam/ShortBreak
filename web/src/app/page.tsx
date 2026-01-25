@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useAction, useConvexAuth, useMutation, useQuery } from "convex/react";
 import Image from "next/image";
-import { SignInButton, useAuth } from "@clerk/nextjs";
+import { SignInButton, SignOutButton, useAuth } from "@clerk/nextjs";
 
 import { HistorySidebar } from "@/components/history-sidebar";
 import { LearningWorkspace } from "@/components/learning-workspace";
@@ -400,6 +400,14 @@ export default function Home() {
             >
               Start New Prompt
             </button>
+            <SignOutButton>
+              <button
+                className="mt-3 w-full rounded-[30px] px-6 py-4 text-base font-normal text-black border border-black/20 bg-white hover:bg-black/5 transition-colors"
+                style={{ fontFamily: "var(--font-coming-soon)" }}
+              >
+                Log out
+              </button>
+            </SignOutButton>
           </div>
         </SidebarContent>
         <SidebarRail />
