@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		89FDFC4A2F259D78000A4E50 /* AppIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89FDFC492F259D77000A4E50 /* AppIntents.swift */; };
+		89FDFC4C2F259D86000A4E50 /* SetupGuideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89FDFC4B2F259D86000A4E50 /* SetupGuideView.swift */; };
 		OBJ_1 /* OneSecApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_2 /* OneSecApp.swift */; };
 		OBJ_3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_4 /* ContentView.swift */; };
 		OBJ_5 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_6 /* AppState.swift */; };
@@ -15,13 +17,15 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		89FDFC492F259D77000A4E50 /* AppIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIntents.swift; sourceTree = "<group>"; };
+		89FDFC4B2F259D86000A4E50 /* SetupGuideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupGuideView.swift; sourceTree = "<group>"; };
+		OBJ_10 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		OBJ_11 /* OneSecApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OneSecApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		OBJ_12 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		OBJ_2 /* OneSecApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneSecApp.swift; sourceTree = "<group>"; };
 		OBJ_4 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		OBJ_6 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		OBJ_8 /* MindfulnessCheckInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MindfulnessCheckInView.swift; sourceTree = "<group>"; };
-		OBJ_10 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		OBJ_12 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -46,6 +50,8 @@
 		OBJ_15 /* OneSecApp */ = {
 			isa = PBXGroup;
 			children = (
+				89FDFC4B2F259D86000A4E50 /* SetupGuideView.swift */,
+				89FDFC492F259D77000A4E50 /* AppIntents.swift */,
 				OBJ_2 /* OneSecApp.swift */,
 				OBJ_4 /* ContentView.swift */,
 				OBJ_6 /* AppState.swift */,
@@ -129,7 +135,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				OBJ_1 /* OneSecApp.swift in Sources */,
+				89FDFC4A2F259D78000A4E50 /* AppIntents.swift in Sources */,
 				OBJ_3 /* ContentView.swift in Sources */,
+				89FDFC4C2F259D86000A4E50 /* SetupGuideView.swift in Sources */,
 				OBJ_5 /* AppState.swift in Sources */,
 				OBJ_7 /* MindfulnessCheckInView.swift in Sources */,
 			);
@@ -265,6 +273,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = FG3Q896A56;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = OneSecApp/Info.plist;
@@ -279,7 +288,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.shortbreak.onesec;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ewen.onesecapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -295,6 +304,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = FG3Q896A56;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = OneSecApp/Info.plist;
@@ -309,7 +319,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.shortbreak.onesec;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ewen.onesecapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

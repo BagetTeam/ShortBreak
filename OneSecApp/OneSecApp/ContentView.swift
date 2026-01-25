@@ -22,8 +22,13 @@ struct ContentView: View {
 }
 
 struct HomeView: View {
+    @State private var showSetupGuide = false
+    @AppStorage("hasCompletedSetup") private var hasCompletedSetup = false
+    
     var body: some View {
         VStack(spacing: 30) {
+            Spacer()
+            
             Image(systemName: "leaf.fill")
                 .font(.system(size: 60))
                 .foregroundColor(.green)
@@ -36,7 +41,54 @@ struct HomeView: View {
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
+            
+            Spacer()
+            
+            // Setup section
+            VStack(spacing: 16) {
+                if !hasCompletedSetup {
+                    Text("Complete setup to intercept Instagram")
+                        .font(.headline)
+                        .foregroundColor(.primary)
+                    
+                    Button(action: {
+                        showSetupGuide = true
+                    }) {
+                        HStack {
+                            Image(systemName: "gear")
+                            Text("Setup Shortcut Automation")
+                        }
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.green)
+                        .cornerRadius(12)
+                    }
+                    .padding(.horizontal, 40)
+                } else {
+                    HStack {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(.green)
+                        Text("Setup complete!")
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    Button(action: {
+                        showSetupGuide = true
+                    }) {
+                        Text("View Setup Guide Again")
+                            .font(.subheadline)
+                            .foregroundColor(.blue)
+                    }
+                }
+            }
+            .padding(.bottom, 40)
         }
         .padding()
+        .sheet(isPresented: $showSetupGuide, onDismiss: {
+            hasCompletedSetup = true
+        }) {
+            SetupGuideView()
+        }
     }
 }
