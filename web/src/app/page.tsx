@@ -6,7 +6,9 @@ import Image from "next/image";
 
 import { HistorySidebar } from "@/components/history-sidebar";
 import { LearningWorkspace } from "@/components/learning-workspace";
+import { MobileNavbar } from "@/components/mobile-navbar";
 import { Button } from "@/components/ui/button";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   Sidebar,
   SidebarContent,
@@ -44,6 +46,7 @@ function MainContent({
   updatePromptProgress: any;
 }) {
   const { state } = useSidebar();
+  const isMobile = useIsMobile();
   const [isScrolling, setIsScrolling] = React.useState(false);
   const mainRef = React.useRef<HTMLElement | null>(null);
   const scrollTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
@@ -80,41 +83,59 @@ function MainContent({
   return (
     <SidebarInset className="!m-0 !rounded-none !shadow-none flex flex-col h-screen overflow-hidden">
       <div className="flex h-full flex-col w-full" style={{ backgroundColor: '#F5F0E6' }}>
-        <header className="flex-shrink-0 flex flex-wrap items-center justify-between gap-4 border-b border-black/10 px-6 pt-3 pb-4 relative min-h-[60px]" style={{ backgroundColor: '#F5F0E6' }}>
-          {/* Sidebar trigger button - visible when sidebar is collapsed */}
-          {state === "collapsed" && (
-            <div className="absolute top-4 left-6 z-20">
-              <SidebarTrigger className="bg-transparent hover:bg-white rounded-lg transition-colors" />
+        {/* Header - desktop */}
+        {!isMobile && (
+          <header className="flex-shrink-0 flex flex-wrap items-center justify-between gap-4 border-b border-black/10 px-6 pt-3 pb-4 relative min-h-[60px]" style={{ backgroundColor: '#F5F0E6' }}>
+            {/* Sidebar trigger button - visible when sidebar is collapsed */}
+            {state === "collapsed" && (
+              <div className="absolute top-4 left-6 z-20">
+                <SidebarTrigger className="bg-transparent hover:bg-white rounded-lg transition-colors" />
+              </div>
+            )}
+            {/* ShortBreak title - only show when sidebar is collapsed */}
+            <div className="space-y-1 ml-auto">
+              <h2 
+                className={`text-2xl font-normal text-black ${state === "collapsed" ? "visible" : "invisible"}`}
+                style={{ fontFamily: 'var(--font-shizuru)' }}
+              >
+                ShortBreak
+              </h2>
             </div>
-          )}
-          {/* ShortBreak title - only show when sidebar is collapsed */}
-          <div className="space-y-1 ml-auto">
+          </header>
+        )}
+        {/* Mobile header */}
+        {isMobile && (
+          <header className="flex-shrink-0 flex items-center justify-center border-b border-black/10 px-6 pt-4 pb-4 relative min-h-[60px]" style={{ backgroundColor: '#F5F0E6' }}>
             <h2 
-              className={`text-2xl font-normal text-black ${state === "collapsed" ? "visible" : "invisible"}`}
+              className="text-2xl font-normal text-black"
               style={{ fontFamily: 'var(--font-shizuru)' }}
             >
               ShortBreak
             </h2>
-          </div>
-        </header>
+          </header>
+        )}
         <main 
           ref={mainRef}
-          className="flex-1 overflow-y-scroll snap-y snap-mandatory flex flex-col relative"
+          className={`flex-1 overflow-y-scroll snap-y snap-mandatory flex flex-col relative ${
+            isMobile ? 'pb-12' : ''
+          }`}
         >
-          {/* Bear image in top right of main container */}
-          <div 
-            className={`absolute top-6 right-6 z-10 transition-opacity duration-200 ${
-              isScrolling ? 'opacity-0' : 'opacity-100'
-            }`}
-          >
-            <Image
-              src="/bear.png"
-              alt="Bear"
-              width={120}
-              height={120}
-              className="object-contain"
-            />
-          </div>
+          {/* Bear image in top right of main container - hide on mobile */}
+          {!isMobile && (
+            <div 
+              className={`absolute top-6 right-6 z-10 transition-opacity duration-200 ${
+                isScrolling ? 'opacity-0' : 'opacity-100'
+              }`}
+            >
+              <Image
+                src="/bear.png"
+                alt="Bear"
+                width={120}
+                height={120}
+                className="object-contain"
+              />
+            </div>
+          )}
           <LearningWorkspace
             feedItems={feedItems ?? []}
             activePromptId={activePromptId}
@@ -135,6 +156,18 @@ function MainContent({
             }}
           />
         </main>
+        {/* Mobile navbar */}
+        {isMobile && (
+          <MobileNavbar 
+            onNewPrompt={() => setActivePromptId(null)}
+            onFeedClick={() => {
+              // Set the first prompt in history as active
+              if (prompts && prompts.length > 0) {
+                setActivePromptId(prompts[0]._id);
+              }
+            }}
+          />
+        )}
       </div>
     </SidebarInset>
   );

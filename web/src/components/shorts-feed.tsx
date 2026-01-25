@@ -4,6 +4,7 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export type ShortsItem = {
   id: string;
@@ -33,6 +34,7 @@ export function ShortsFeed({
   const [activeIndex, setActiveIndex] = React.useState(activeIndexProp ?? 0);
   const itemRefs = React.useRef<Array<HTMLDivElement | null>>([]);
   const scrollRef = React.useRef<HTMLDivElement | null>(null);
+  const isMobile = useIsMobile();
 
   React.useEffect(() => {
     if (activeIndexProp !== undefined) {
@@ -113,7 +115,10 @@ export function ShortsFeed({
               ref={(node) => {
                 itemRefs.current[index] = node;
               }}
-              className="h-screen w-full snap-center snap-always relative flex items-center justify-center pt-4 pb-4"
+              className={cn(
+                "h-screen w-full snap-center snap-always relative flex",
+                isMobile ? "items-start justify-center pt-20" : "items-center justify-center"
+              )}
             >
               {shouldShow ? (
                 <>
