@@ -162,8 +162,27 @@ struct HomeView: View {
                 Image("GreenCat")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(maxWidth: 350, maxHeight: 350)
+                    .frame(maxWidth: 500, maxHeight: 500)
                     .padding(.top, 20)
+                
+                // View Stats button below cat
+                Button(action: {
+                    appState.shouldShowMindfulness = true
+                }) {
+                    Text("View Stats")
+                        .font(comingSoonFont(size: 16))
+                        .foregroundColor(.black)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(softWhite)
+                        .cornerRadius(20)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 20)
+                                .stroke(Color.black, lineWidth: 1.5)
+                        )
+                        .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
+                }
+                .padding(.top, 20)
                 
                 Spacer()
                     .frame(minHeight: 40)
