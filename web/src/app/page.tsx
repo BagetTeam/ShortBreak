@@ -233,6 +233,7 @@ function MainContent({
                 setActivePromptId(prompts[0]._id);
               }
             }}
+            isScrolling={isScrolling}
           />
         )}
       </div>

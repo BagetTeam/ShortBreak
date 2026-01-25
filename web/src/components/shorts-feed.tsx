@@ -122,8 +122,11 @@ export function ShortsFeed({
             >
               {shouldShow ? (
                 <>
-                  {/* Video card with white border */}
-                  <div className="w-full max-w-sm aspect-[9/16] bg-black rounded-3xl overflow-hidden border border-white shadow-lg">
+                  {/* Video card with white border - narrower on mobile */}
+                  <div className={cn(
+                    "w-full aspect-[9/16] bg-black rounded-3xl overflow-hidden border border-white shadow-lg",
+                    isMobile ? "max-w-[280px]" : "max-w-sm"
+                  )}>
                     <iframe
                       title={item.title}
                       className="h-full w-full"
@@ -137,7 +140,10 @@ export function ShortsFeed({
                 </>
               ) : (
                 // Placeholder for non-visible cards to maintain scroll positions
-                <div className="w-full max-w-sm aspect-[9/16] bg-transparent" />
+                <div className={cn(
+                  "w-full aspect-[9/16] bg-transparent",
+                  isMobile ? "max-w-[280px]" : "max-w-sm"
+                )} />
               )}
             </div>
           );
