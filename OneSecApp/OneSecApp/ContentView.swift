@@ -24,10 +24,9 @@ struct ContentView: View {
 struct HomeView: View {
     @EnvironmentObject var appState: AppState
     @State private var showSetupGuide = false
-    @AppStorage("hasCompletedSetup") private var hasCompletedSetup = false
     
-    // TODO: Replace with your actual iCloud shortcut link after creating it
-    let shortcutInstallURL = "https://www.icloud.com/shortcuts/YOUR_SHORTCUT_ID_HERE"
+    // Your iCloud shortcut link for "OneSec Gate"
+    let shortcutInstallURL = "https://www.icloud.com/shortcuts/393fbb98ca1d4af8bd9061ae245b4b42"
     
     var body: some View {
         VStack(spacing: 24) {
@@ -67,7 +66,7 @@ struct HomeView: View {
                             .frame(width: 24, height: 24)
                             .background(Color.green.opacity(0.2))
                             .clipShape(Circle())
-                        Text("Install 'OneSec Gate' Shortcut")
+                        Text("Install 'ShortBreak' Shortcut")
                         Spacer()
                         Image(systemName: "arrow.up.right.square")
                     }
@@ -133,7 +132,7 @@ struct AutomationGuideView: View {
                         StepRow(number: "4", text: "Select App → Instagram → Is Opened")
                         StepRow(number: "5", text: "Tap Next")
                         StepRow(number: "6", text: "Add action: Run Shortcut")
-                        StepRow(number: "7", text: "Select 'OneSec Gate'")
+                        StepRow(number: "7", text: "Select 'ShortBreak shortcut'")
                         StepRow(number: "8", text: "Tap Next → Turn OFF 'Ask Before Running'")
                         StepRow(number: "9", text: "Tap Done!")
                     }
