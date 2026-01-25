@@ -24,16 +24,29 @@ export default function Home() {
   const [activePromptId, setActivePromptId] = React.useState<string | null>(
     null
   );
+  const [activeIndex, setActiveIndex] = React.useState(0);
   const feedItems = useQuery(
     api.queries.listFeedItems,
     activePromptId ? { promptId: activePromptId } : "skip"
   );
   const deletePrompt = useMutation(api.mutations.deletePrompt);
+  const updatePromptProgress = useMutation(api.mutations.updatePromptProgress);
 
   React.useEffect(() => {
     if (prompts && prompts.length > 0 && !activePromptId) {
       setActivePromptId(prompts[0]._id);
     }
+  }, [prompts, activePromptId]);
+
+  React.useEffect(() => {
+    if (!prompts || !activePromptId) {
+      return;
+    }
+    const current = prompts.find((prompt) => prompt._id === activePromptId);
+    if (!current) {
+      return;
+    }
+    setActiveIndex(current.lastWatchedIndex ?? 0);
   }, [prompts, activePromptId]);
 
   const promptHistory =
@@ -106,6 +119,19 @@ export default function Home() {
             <LearningWorkspace
               feedItems={feedItems ?? []}
               onPromptCreated={setActivePromptId}
+              activeIndex={activeIndex}
+              onActiveIndexChange={(index) => {
+                setActiveIndex(index);
+                if (!activePromptId) {
+                  return;
+                }
+                const activeItem = feedItems?.[index];
+                updatePromptProgress({
+                  promptId: activePromptId,
+                  lastWatchedIndex: index,
+                  lastVideoId: activeItem?.videoId,
+                });
+              }}
             />
           </main>
         </div>

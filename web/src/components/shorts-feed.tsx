@@ -34,6 +34,10 @@ export function ShortsFeed({
   React.useEffect(() => {
     if (activeIndexProp !== undefined) {
       setActiveIndex(activeIndexProp);
+      const target = itemRefs.current[activeIndexProp];
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     }
   }, [activeIndexProp]);
 
