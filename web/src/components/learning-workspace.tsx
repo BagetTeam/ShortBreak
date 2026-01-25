@@ -66,7 +66,8 @@ export function LearningWorkspace({
   const fetchNextTopic = useAction(api.actions.fetchNextTopic.fetchNextTopic);
 
   const handleSubmit = async () => {
-    if (!prompt.trim()) {
+    // Allow submission if there's text OR a file attached
+    if (!prompt.trim() && !file) {
       return;
     }
     setErrorMessage(null);
@@ -88,17 +89,23 @@ export function LearningWorkspace({
         attachmentId = json.storageId as string | undefined;
       }
 
+      // Use a default prompt if only PDF is provided
+      const effectivePrompt = prompt.trim() || (file ? "Extract the course outline from the attached PDF" : "");
+      
       const promptId = await createPrompt({
-        prompt,
+        prompt: effectivePrompt,
         attachmentId,
       });
       onPromptCreated?.(promptId);
 
       // Step 1: Generate comprehensive outline from Gemini
-      setStatusMessage("Creating comprehensive course outline...");
+      setStatusMessage(attachmentId 
+        ? "Parsing PDF and creating course outline..." 
+        : "Creating comprehensive course outline...");
       const outlineItems = await generateOutline({
         promptId,
-        prompt,
+        prompt: effectivePrompt,
+        attachmentId,
       });
       if (!outlineItems.length) {
         setErrorMessage(

@@ -183,8 +183,10 @@ function MainContent({
               const activeItem = feedItems?.[index];
               updatePromptProgress({
                 promptId: activePromptId,
-                lastWatchedIndex: index,
-                lastVideoId: activeItem?.videoId,
+                updates: {
+                  lastWatchedIndex: index,
+                  lastVideoId: activeItem?.videoId,
+                },
               });
             }}
             onNearEnd={async () => {
@@ -253,6 +255,7 @@ function MainContent({
                 setActivePromptId(prompts[0]._id);
               }
             }}
+            isScrolling={isScrolling}
           />
         )}
       </div>

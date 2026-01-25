@@ -13,7 +13,41 @@ type OutlineItem = {
   order: number;
 };
 
-const buildPrompt = (prompt: string) => {
+/**
+ * Build the prompt for outline generation.
+ * If hasPdf is true, we instruct Gemini to extract topics from the attached PDF.
+ */
+const buildPrompt = (prompt: string, hasPdf: boolean) => {
+  // If we have a PDF attached, use a different prompt that strictly follows the PDF outline
+  if (hasPdf) {
+    return [
+      "You are an expert curriculum designer and educational content specialist.",
+      "",
+      "The user has uploaded a PDF document that contains a COURSE OUTLINE or SYLLABUS.",
+      "Your task is to STRICTLY FOLLOW this outline and extract the topics exactly as they appear.",
+      "",
+      "IMPORTANT RULES:",
+      "- DO NOT create your own topics or reorganize the content",
+      "- Extract topics EXACTLY as they appear in the PDF outline",
+      "- Preserve the EXACT order from the document",
+      "- Include ALL topics from the outline, even if some seem redundant",
+      "- If the PDF contains numbered sections (e.g., '1.1 Introduction'), extract the topic title",
+      "- If subtopics are listed, include them as separate items",
+      "",
+      "For each topic extracted from the PDF, provide:",
+      "1. The exact title as it appears in the document (cleaned up if needed)",
+      "2. A specific YouTube search query optimized to find educational short-form videos on that topic",
+      "   - Include the course subject for context (e.g., 'calculus limits explained')",
+      "   - Add terms like 'explained', 'tutorial', or 'introduction' as appropriate",
+      "",
+      "Respond in JSON with an array named 'items', each item having 'title' and 'searchQuery'.",
+      "",
+      "User's additional context/instructions:",
+      prompt,
+    ].join("\n");
+  }
+
+  // Default prompt when no PDF is provided
   return [
     "You are an expert curriculum designer and educational content specialist.",
     "",
@@ -52,6 +86,15 @@ const buildPrompt = (prompt: string) => {
     `Topic: ${prompt}`,
   ].join("\n");
 };
+
+/**
+ * Convert a Blob to base64 string for Gemini API
+ */
+async function blobToBase64(blob: Blob): Promise<string> {
+  const arrayBuffer = await blob.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+  return buffer.toString("base64");
+}
 
 const normalizeOutline = (payload: unknown): Omit<OutlineItem, "order">[] => {
   if (!payload) {
@@ -108,6 +151,7 @@ export const generateOutline = action({
   args: {
     promptId: v.id("prompts"),
     prompt: v.string(),
+    attachmentId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const clerkId = await getClerkId(ctx);
@@ -119,6 +163,43 @@ export const generateOutline = action({
       throw new Error("Missing GEMINI_API_KEY.");
     }
 
+    // If we have an attachment, get it as base64 for Gemini
+    let pdfBase64: string | undefined;
+    let isFromPdf = false;
+    
+    if (args.attachmentId) {
+      try {
+        // Get the PDF from Convex storage
+        const pdfBlob = await ctx.storage.get(args.attachmentId as Id<"_storage">);
+        if (pdfBlob) {
+          pdfBase64 = await blobToBase64(pdfBlob);
+          isFromPdf = true;
+          console.log(`Successfully loaded PDF, ${pdfBase64.length} base64 characters`);
+        }
+      } catch (error) {
+        console.error("Failed to load PDF:", error);
+        // Continue without PDF if loading fails
+      }
+    }
+
+    // Build the request parts - include PDF as inline data if available
+    const parts: Array<{ text: string } | { inline_data: { mime_type: string; data: string } }> = [];
+    
+    if (pdfBase64) {
+      // Add PDF as inline data first
+      parts.push({
+        inline_data: {
+          mime_type: "application/pdf",
+          data: pdfBase64,
+        },
+      });
+      // Then add the prompt that references the PDF
+      parts.push({ text: buildPrompt(args.prompt, true) });
+    } else {
+      // Just text prompt without PDF
+      parts.push({ text: buildPrompt(args.prompt, false) });
+    }
+
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
       {
@@ -128,12 +209,12 @@ export const generateOutline = action({
           contents: [
             {
               role: "user",
-              parts: [{ text: buildPrompt(args.prompt) }],
+              parts,
             },
           ],
           generationConfig: {
             responseMimeType: "application/json",
-            temperature: 0.4,
+            temperature: isFromPdf ? 0.2 : 0.4, // Lower temperature when following PDF outline
           },
         }),
       },
@@ -161,6 +242,17 @@ export const generateOutline = action({
         items,
       },
     );
+
+    // Update the prompt to track that it came from a PDF (for expansion logic)
+    if (isFromPdf) {
+      await ctx.runMutation(api.mutations.updatePromptProgress.updatePromptProgress, {
+        promptId: args.promptId,
+        updates: {
+          isFromPdf: true,
+          originalTopicCount: items.length,
+        },
+      });
+    }
 
     return items.map((item, index) => ({
       ...item,

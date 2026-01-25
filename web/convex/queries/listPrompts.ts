@@ -15,6 +15,6 @@ export const listPrompts = query({
       .query("prompts")
       .withIndex("by_user_id", (q) => q.eq("userId", user._id))
       .collect();
-    return prompts.sort((a, b) => b.createdAt - a.createdAt);
+    return prompts.sort((a, b) => b._creationTime - a._creationTime);
   },
 });

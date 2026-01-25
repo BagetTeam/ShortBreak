@@ -26,11 +26,15 @@ export default defineSchema({
     lastLoadedTopicIndex: v.optional(v.number()),
     // Track how many times the outline has been expanded for infinite scrolling
     expansionCount: v.optional(v.number()),
+    // Track if the outline was generated from a PDF course outline
+    isFromPdf: v.optional(v.boolean()),
+    // Track the original number of topics from the PDF (to know when to expand)
+    originalTopicCount: v.optional(v.number()),
     createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_created_at", ["createdAt"])
-    .index("by_user_id", ["userId"]),
+    .index("by_user_id", ["userId"])
 
   outlineItems: defineTable({
     userId: v.id("users"),

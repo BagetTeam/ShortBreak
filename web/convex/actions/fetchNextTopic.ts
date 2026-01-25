@@ -10,7 +10,25 @@ export const fetchNextTopic = action({
   args: {
     promptId: v.id("prompts"),
   },
-  handler: async (ctx, args) => {
+  handler: async (
+    ctx,
+    args,
+  ): Promise<{
+    status: "success" | "no_topics" | "needs_expansion" | "error";
+    topicTitle?: string;
+    topicOrder?: number;
+    items: Array<{
+      outlineItemId: string;
+      videoId: string;
+      topicTitle: string;
+      order: number;
+      metaData?: {
+        channelTitle?: string;
+        publishedAt?: string;
+      };
+    }>;
+    hasMoreTopics?: boolean;
+  }> => {
     const clerkId = await getClerkId(ctx);
     await ctx.runQuery(api.queries.getUserByClerkId.getUserByClerkId, {
       clerkId,
@@ -23,7 +41,7 @@ export const fetchNextTopic = action({
     // Get all outline items for this prompt
     const outlineItems = await ctx.runQuery(
       api.queries.listOutlineItems.listOutlineItems,
-      { promptId: args.promptId }
+      { promptId: args.promptId },
     );
 
     if (!outlineItems || outlineItems.length === 0) {
@@ -62,7 +80,7 @@ export const fetchNextTopic = action({
     // Get the current max order from existing feed items
     const existingFeedItems = await ctx.runQuery(
       api.queries.listFeedItems.listFeedItems,
-      { promptId: args.promptId }
+      { promptId: args.promptId },
     );
     const maxOrder = existingFeedItems?.length
       ? Math.max(...existingFeedItems.map((item) => item.order))
@@ -106,15 +124,14 @@ export const fetchNextTopic = action({
     }
 
     // Mark this topic as fetched
-    await ctx.runMutation(
-      api.mutations.appendOutlineItems.markTopicFetched,
-      { outlineItemId: nextTopic._id }
-    );
+    await ctx.runMutation(api.mutations.appendOutlineItems.markTopicFetched, {
+      outlineItemId: nextTopic._id,
+    });
 
     // Update the last loaded topic index
     await ctx.runMutation(
       api.mutations.appendOutlineItems.updateLastLoadedTopic,
-      { promptId: args.promptId, topicIndex: nextTopic.order }
+      { promptId: args.promptId, topicIndex: nextTopic.order },
     );
 
     return {
@@ -123,7 +140,7 @@ export const fetchNextTopic = action({
       topicOrder: nextTopic.order,
       items: feedItems,
       hasMoreTopics: sortedItems.some(
-        (item) => item.order > nextTopic.order && !item.videosFetched
+        (item) => item.order > nextTopic.order && !item.videosFetched,
       ),
     };
   },

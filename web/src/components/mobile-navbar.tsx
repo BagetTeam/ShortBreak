@@ -8,14 +8,17 @@ import { useSidebar } from "@/components/ui/sidebar";
 type MobileNavbarProps = {
   onNewPrompt: () => void;
   onFeedClick: () => void;
+  isScrolling?: boolean;
 };
 
-export function MobileNavbar({ onNewPrompt, onFeedClick }: MobileNavbarProps) {
+export function MobileNavbar({ onNewPrompt, onFeedClick, isScrolling = false }: MobileNavbarProps) {
   const { toggleSidebar } = useSidebar();
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 border-t border-black/10"
+      className={`fixed bottom-0 left-0 right-0 z-50 border-t border-black/10 transition-transform duration-300 ${
+        isScrolling ? 'translate-y-full' : 'translate-y-0'
+      }`}
       style={{ backgroundColor: '#F5F0E6' }}
     >
       <div className="flex items-center justify-around h-12 px-4 pb-1">
