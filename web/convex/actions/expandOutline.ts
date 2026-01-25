@@ -126,7 +126,18 @@ export const expandOutline = action({
   args: {
     promptId: v.id("prompts"),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<{
+    status: "success" | "no_new_topics";
+    expansionRound?: number;
+    items: Array<{
+      title: string;
+      searchQuery: string;
+      order: number;
+      isExpansion?: boolean;
+      expansionRound?: number;
+      outlineItemId?: Id<"outlineItems">;
+    }>;
+  }> => {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       throw new Error("Missing GEMINI_API_KEY.");
