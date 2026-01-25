@@ -12,6 +12,8 @@ import type * as actions_expandOutline from "../actions/expandOutline.js";
 import type * as actions_fetchNextTopic from "../actions/fetchNextTopic.js";
 import type * as actions_fetchShorts from "../actions/fetchShorts.js";
 import type * as actions_generateOutline from "../actions/generateOutline.js";
+import type * as auth from "../auth.js";
+import type * as http from "../http.js";
 import type * as mutations_appendFeedItems from "../mutations/appendFeedItems.js";
 import type * as mutations_appendOutlineItems from "../mutations/appendOutlineItems.js";
 import type * as mutations_createPrompt from "../mutations/createPrompt.js";
@@ -34,6 +36,8 @@ declare const fullApi: ApiFromModules<{
   "actions/fetchNextTopic": typeof actions_fetchNextTopic;
   "actions/fetchShorts": typeof actions_fetchShorts;
   "actions/generateOutline": typeof actions_generateOutline;
+  auth: typeof auth;
+  http: typeof http;
   "mutations/appendFeedItems": typeof mutations_appendFeedItems;
   "mutations/appendOutlineItems": typeof mutations_appendOutlineItems;
   "mutations/createPrompt": typeof mutations_createPrompt;

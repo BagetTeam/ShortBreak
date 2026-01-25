@@ -1,9 +1,11 @@
 import { defineSchema, defineTable } from "convex/server";
-import { authTables } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 
 export default defineSchema({
-  ...authTables,
+  users: defineTable({
+    clerkId: v.string(),
+  }),
+
   prompts: defineTable({
     title: v.string(),
     prompt: v.string(),
@@ -26,6 +28,7 @@ export default defineSchema({
     createdAt: v.number(),
     updatedAt: v.number(),
   }).index("by_created_at", ["createdAt"]),
+
   outlineItems: defineTable({
     promptId: v.id("prompts"),
     title: v.string(),
@@ -41,6 +44,7 @@ export default defineSchema({
   })
     .index("by_prompt", ["promptId"])
     .index("by_prompt_order", ["promptId", "order"]),
+
   feedItems: defineTable({
     promptId: v.id("prompts"),
     outlineItemId: v.optional(v.id("outlineItems")),
