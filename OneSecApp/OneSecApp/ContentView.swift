@@ -176,27 +176,28 @@ struct HomeView: View {
             VStack(spacing: 0) {
                 // ShortBreak title at the very top
                 Text("ShortBreak")
-                    .font(shizuruFont(size: 28))
+                    .font(shizuruFont(size: 40))
                     .foregroundColor(.black)
+                    .shadow(color: Color.black.opacity(0.3), radius: 2, x: 0, y: 1)
                     .padding(.top, 60)
                 
                 // Reindeer image below title
                 Image("Reindeer")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(maxWidth: 200, maxHeight: 200)
+                    .frame(maxWidth: 280, maxHeight: 280)
                     .padding(.top, 20)
                 
-                // Description text below reindeer
+                Spacer()
+                    .frame(minHeight: 40)
+                
+                // Description text directly above cards
                 Text("access instagram with limited time or scroll a custom educational feed")
                     .font(comingSoonFont(size: 16))
                     .foregroundColor(.black.opacity(0.7))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
-                    .padding(.top, 24)
-                
-                Spacer()
-                    .frame(minHeight: 40)
+                    .padding(.bottom, 20)
                 
                 // Two large vertically stacked cards
                 VStack(spacing: 24) {
@@ -205,7 +206,7 @@ struct HomeView: View {
                         // Handle Instagram action
                     }) {
                         Text("Continue to Instagram")
-                            .font(comfortaaFont(size: 20, weight: .bold))
+                            .font(comingSoonFont(size: 20))
                             .foregroundColor(.black)
                             .frame(maxWidth: .infinity)
                             .frame(height: 80)
@@ -213,7 +214,7 @@ struct HomeView: View {
                             .cornerRadius(30)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 30)
-                                    .stroke(lightGrey, lineWidth: 1)
+                                    .stroke(Color.black, lineWidth: 1.5)
                             )
                             .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: 4)
                     }
@@ -224,7 +225,7 @@ struct HomeView: View {
                         // Handle Shortbreak action
                     }) {
                         Text("Shortbreak Website")
-                            .font(comfortaaFont(size: 20, weight: .bold))
+                            .font(comingSoonFont(size: 20))
                             .foregroundColor(.black)
                             .frame(maxWidth: .infinity)
                             .frame(height: 80)
@@ -232,7 +233,7 @@ struct HomeView: View {
                             .cornerRadius(30)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 30)
-                                    .stroke(lightGrey, lineWidth: 1)
+                                    .stroke(Color.black, lineWidth: 1.5)
                             )
                             .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: 4)
                     }
