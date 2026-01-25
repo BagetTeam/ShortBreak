@@ -4,12 +4,17 @@ import { action } from "../_generated/server";
 import { v } from "convex/values";
 
 import { api } from "../_generated/api";
+import { getClerkId } from "../lib/auth";
 
 export const fetchNextTopic = action({
   args: {
     promptId: v.id("prompts"),
   },
   handler: async (ctx, args) => {
+    const clerkId = await getClerkId(ctx);
+    await ctx.runQuery(api.queries.getUserByClerkId.getUserByClerkId, {
+      clerkId,
+    });
     const apiKey = process.env.YOUTUBE_API_KEY;
     if (!apiKey) {
       throw new Error("Missing YOUTUBE_API_KEY.");

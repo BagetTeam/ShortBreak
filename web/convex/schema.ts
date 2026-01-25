@@ -4,9 +4,10 @@ import { v } from "convex/values";
 export default defineSchema({
   users: defineTable({
     clerkId: v.string(),
-  }),
+  }).index("by_clerk_id", ["clerkId"]),
 
   prompts: defineTable({
+    userId: v.id("users"),
     title: v.string(),
     prompt: v.string(),
     attachmentId: v.optional(v.string()),
@@ -27,9 +28,12 @@ export default defineSchema({
     expansionCount: v.optional(v.number()),
     createdAt: v.number(),
     updatedAt: v.number(),
-  }).index("by_created_at", ["createdAt"]),
+  })
+    .index("by_created_at", ["createdAt"])
+    .index("by_user_id", ["userId"]),
 
   outlineItems: defineTable({
+    userId: v.id("users"),
     promptId: v.id("prompts"),
     title: v.string(),
     searchQuery: v.string(),
@@ -43,9 +47,11 @@ export default defineSchema({
     createdAt: v.number(),
   })
     .index("by_prompt", ["promptId"])
-    .index("by_prompt_order", ["promptId", "order"]),
+    .index("by_prompt_order", ["promptId", "order"])
+    .index("by_user_id", ["userId"]),
 
   feedItems: defineTable({
+    userId: v.id("users"),
     promptId: v.id("prompts"),
     outlineItemId: v.optional(v.id("outlineItems")),
     videoId: v.string(),
@@ -61,5 +67,6 @@ export default defineSchema({
     createdAt: v.number(),
   })
     .index("by_prompt", ["promptId"])
-    .index("by_prompt_order", ["promptId", "order"]),
+    .index("by_prompt_order", ["promptId", "order"])
+    .index("by_user_id", ["userId"]),
 });

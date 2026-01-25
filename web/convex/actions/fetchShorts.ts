@@ -5,6 +5,7 @@ import { v } from "convex/values";
 
 import { api } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
+import { getClerkId } from "../lib/auth";
 
 type OutlineInput = {
   title: string;
@@ -26,6 +27,10 @@ export const fetchShorts = action({
     ),
   },
   handler: async (ctx, args) => {
+    const clerkId = await getClerkId(ctx);
+    await ctx.runQuery(api.queries.getUserByClerkId.getUserByClerkId, {
+      clerkId,
+    });
     const apiKey = process.env.YOUTUBE_API_KEY;
     if (!apiKey) {
       throw new Error("Missing YOUTUBE_API_KEY.");

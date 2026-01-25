@@ -5,6 +5,7 @@ import type { Id } from "../_generated/dataModel";
 import { v } from "convex/values";
 
 import { api } from "../_generated/api";
+import { getClerkId } from "../lib/auth";
 
 type OutlineItem = {
   title: string;
@@ -127,6 +128,10 @@ export const expandOutline = action({
     promptId: v.id("prompts"),
   },
   handler: async (ctx, args) => {
+    const clerkId = await getClerkId(ctx);
+    await ctx.runQuery(api.queries.getUserByClerkId.getUserByClerkId, {
+      clerkId,
+    });
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       throw new Error("Missing GEMINI_API_KEY.");
