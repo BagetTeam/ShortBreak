@@ -142,7 +142,7 @@ export function LearningWorkspace({
             className="w-full"
           />
           {errorMessage ? (
-            <p className="text-sm text-rose-600">{errorMessage}</p>
+            <p className="text-sm text-rose-600" style={{ fontFamily: 'var(--font-coming-soon)' }}>{errorMessage}</p>
           ) : null}
         </div>
       </div>
@@ -152,12 +152,12 @@ export function LearningWorkspace({
   return (
     <div className="flex flex-1 flex-col gap-6">
       {statusMessage ? (
-        <div className="rounded-2xl border border-border/60 bg-white/70 px-4 py-3 text-sm text-muted-foreground">
+        <div className="rounded-2xl border border-border/60 bg-white/70 px-4 py-3 text-sm text-muted-foreground" style={{ fontFamily: 'var(--font-coming-soon)' }}>
           {statusMessage}
         </div>
       ) : null}
       {errorMessage ? (
-        <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+        <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700" style={{ fontFamily: 'var(--font-coming-soon)' }}>
           {errorMessage}
         </div>
       ) : null}

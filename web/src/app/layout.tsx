@@ -1,16 +1,18 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Coming_Soon, Shizuru } from "next/font/google";
 import "./globals.css";
 import { ConvexClientProvider } from "./convex-provider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const comingSoon = Coming_Soon({
+  variable: "--font-coming-soon",
   subsets: ["latin"],
+  weight: "400",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const shizuru = Shizuru({
+  variable: "--font-shizuru",
   subsets: ["latin"],
+  weight: "400",
 });
 
 export const metadata: Metadata = {
@@ -26,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${comingSoon.variable} ${shizuru.variable} antialiased`}
       >
         <ConvexClientProvider>{children}</ConvexClientProvider>
       </body>
