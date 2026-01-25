@@ -14,7 +14,9 @@ struct ContentView: View {
     
     var body: some View {
         ZStack {
-            if appState.shouldShowSessionSummary {
+            if appState.shouldShowSpinner {
+                TimeSpinnerView()
+            } else if appState.shouldShowSessionSummary {
                 SessionSummaryView()
             } else if appState.shouldShowMindfulness {
                 MindfulnessCheckInView()

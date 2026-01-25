@@ -26,16 +26,22 @@ import UIKit
 class AppState: ObservableObject {
     @Published var shouldShowMindfulness = false
     @Published var shouldShowSessionSummary = false
+    @Published var shouldShowSpinner = false
     @Published var targetApp: String = "instagram://"
     @Published var screenTimeData: ScreenTimeData?
     @Published var lastSessionDuration: Double = 0  // Duration of the last Instagram session in seconds
+    @Published var wonScreenTime: Int = 0  // The amount won from the spinner (in minutes)
     
     private let bypassKey = "BYPASS_CONFIRM"
     private let dbManager = DatabaseManager.shared
     
+    // Time required between claims (180 seconds = 3 min for testing, use 3600 for 1 hour)
+    let claimCooldown: Double = 180
+    
     init() {
         shouldShowMindfulness = false
         shouldShowSessionSummary = false
+        shouldShowSpinner = false
         refreshScreenTimeData()
     }
     
@@ -153,4 +159,78 @@ class AppState: ObservableObject {
             return "\(secs)s"
         }
     }
+    
+    // MARK: - Spinner / Lottery Methods
+    
+    /// Check if claim is available
+    func isClaimAvailable() -> Bool {
+        return dbManager.isClaimAvailable(requiredSeconds: claimCooldown)
+    }
+    
+    /// Get time remaining until next claim (in seconds)
+    func timeUntilNextClaim() -> Double {
+        return dbManager.timeUntilNextClaim(requiredSeconds: claimCooldown)
+    }
+    
+    /// Start the spinner - called when user taps claim button
+    func startSpinner() {
+        // Mark the claim time immediately
+        dbManager.updateLastGiveAway()
+        
+        // Roll the weighted random result
+        wonScreenTime = rollWeightedScreenTime()
+        
+        // Show spinner
+        shouldShowSpinner = true
+        
+        print("🎰 Starting spinner, will win: \(wonScreenTime) minutes")
+    }
+    
+    /// Called when spinner animation completes - adds the won time
+    func finishSpinner() {
+        // Add the won time to allocated screen time
+        let seconds = Double(wonScreenTime * 60)
+        dbManager.addScreenTime(seconds: seconds)
+        
+        // Refresh data and hide spinner
+        refreshScreenTimeData()
+        shouldShowSpinner = false
+        
+        print("✅ Spinner complete, added \(wonScreenTime) minutes")
+    }
+    
+    /// Roll weighted random screen time
+    /// Returns minutes: 1, 2, 3, 5, 8, 10, 15, 20, or 30
+    /// Higher values are rarer (30min ≈ 1%)
+    private func rollWeightedScreenTime() -> Int {
+        // Weights for each time option (higher = more common)
+        // Total weight = 100
+        let options: [(minutes: Int, weight: Int)] = [
+            (1, 25),   // 25% chance
+            (2, 22),   // 22% chance
+            (3, 18),   // 18% chance
+            (5, 14),   // 14% chance
+            (8, 10),   // 10% chance
+            (10, 6),   // 6% chance
+            (15, 3),   // 3% chance
+            (20, 1),   // 1% chance
+            (30, 1),   // 1% chance
+        ]
+        
+        let totalWeight = options.reduce(0) { $0 + $1.weight }
+        let roll = Int.random(in: 1...totalWeight)
+        
+        var cumulative = 0
+        for option in options {
+            cumulative += option.weight
+            if roll <= cumulative {
+                return option.minutes
+            }
+        }
+        
+        return 1  // Fallback
+    }
+    
+    /// Get all possible time options for the spinner display
+    static let spinnerOptions: [Int] = [1, 2, 3, 5, 8, 10, 15, 20, 30]
 }

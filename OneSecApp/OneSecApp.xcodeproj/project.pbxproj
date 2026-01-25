@@ -12,6 +12,7 @@
 		89FDFC4E2F25A255000A4E50 /* HomeScreenShortcutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89FDFC4D2F25A255000A4E50 /* HomeScreenShortcutView.swift */; };
 		DB_1 /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB_2 /* DatabaseManager.swift */; };
 		SS_1 /* SessionSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SS_2 /* SessionSummaryView.swift */; };
+		TS_1 /* TimeSpinnerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = TS_2 /* TimeSpinnerView.swift */; };
 		FONT_1 /* ComingSoon-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FONT_2 /* ComingSoon-Regular.ttf */; };
 		FONT_3 /* Shizuru-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FONT_4 /* Shizuru-Regular.ttf */; };
 		FONT_5 /* Comfortaa-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FONT_6 /* Comfortaa-Regular.ttf */; };
@@ -30,6 +31,7 @@
 		89FDFC4F2F25AFFA000A4E50 /* OneSecApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = OneSecApp.entitlements; sourceTree = "<group>"; };
 		DB_2 /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
 		SS_2 /* SessionSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionSummaryView.swift; sourceTree = "<group>"; };
+		TS_2 /* TimeSpinnerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSpinnerView.swift; sourceTree = "<group>"; };
 		FONT_2 /* ComingSoon-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ComingSoon-Regular.ttf"; sourceTree = "<group>"; };
 		FONT_4 /* Shizuru-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Shizuru-Regular.ttf"; sourceTree = "<group>"; };
 		FONT_6 /* Comfortaa-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Comfortaa-Regular.ttf"; sourceTree = "<group>"; };
@@ -85,6 +87,7 @@
 				OBJ_6 /* AppState.swift */,
 				DB_2 /* DatabaseManager.swift */,
 				SS_2 /* SessionSummaryView.swift */,
+				TS_2 /* TimeSpinnerView.swift */,
 				OBJ_8 /* MindfulnessCheckInView.swift */,
 				OBJ_10 /* Assets.xcassets */,
 				OBJ_12 /* Info.plist */,
@@ -177,6 +180,7 @@
 				OBJ_5 /* AppState.swift in Sources */,
 				DB_1 /* DatabaseManager.swift in Sources */,
 				SS_1 /* SessionSummaryView.swift in Sources */,
+				TS_1 /* TimeSpinnerView.swift in Sources */,
 				OBJ_7 /* MindfulnessCheckInView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -12,6 +12,10 @@ import CoreText
 struct MindfulnessCheckInView: View {
     @EnvironmentObject var appState: AppState
     
+    // Timer for countdown
+    @State private var timeUntilClaim: Double = 0
+    @State private var timer: Timer?
+    
     // Placeholder URL for ShortBreak web app
     private let shortBreakURL = "https://github.com/BagetTeam"
     
@@ -21,6 +25,8 @@ struct MindfulnessCheckInView: View {
     private let softWhite = Color(red: 0.99, green: 0.99, blue: 0.98)
     // Light grey for borders
     private let lightGrey = Color(red: 0.85, green: 0.85, blue: 0.85)
+    // Gold color for claim button
+    private let goldColor = Color(red: 1.0, green: 0.84, blue: 0.0)
     
     init() {
         // Register fonts from bundle if not already registered
@@ -184,37 +190,41 @@ struct MindfulnessCheckInView: View {
                 Image("Reindeer")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(maxWidth: 240, maxHeight: 240)
+                    .frame(maxWidth: 200, maxHeight: 200)
                     .padding(.top, 10)
                 
                 // Screen Time Display
                 screenTimeDisplay
-                    .padding(.top, 16)
+                    .padding(.top, 12)
+                
+                // Claim Time Button
+                claimTimeButton
+                    .padding(.top, 12)
                 
                 Spacer()
-                    .frame(minHeight: 20)
+                    .frame(minHeight: 16)
                 
                 // Description text directly above cards
                 Text("access instagram with limited time or scroll a custom educational feed")
-                    .font(comingSoonFont(size: 16))
+                    .font(comingSoonFont(size: 14))
                     .foregroundColor(.black.opacity(0.7))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
-                    .padding(.bottom, 20)
+                    .padding(.bottom, 16)
                 
                 // Two large vertically stacked cards
-                VStack(spacing: 24) {
+                VStack(spacing: 16) {
                     // First card: Continue to Instagram
                     Button(action: {
                         handleContinueToInsta()
                     }) {
                         VStack(spacing: 4) {
                             Text("Continue on Insta")
-                                .font(comingSoonFont(size: 20))
+                                .font(comingSoonFont(size: 18))
                                 .foregroundColor(.black)
                         }
                         .frame(maxWidth: .infinity)
-                        .frame(height: 80)
+                        .frame(height: 70)
                         .background(softWhite)
                         .cornerRadius(30)
                         .overlay(
@@ -230,10 +240,10 @@ struct MindfulnessCheckInView: View {
                         handleGoToShortBreak()
                     }) {
                         Text("Bring me to ShortBreak")
-                            .font(comingSoonFont(size: 20))
+                            .font(comingSoonFont(size: 18))
                             .foregroundColor(.black)
                             .frame(maxWidth: .infinity)
-                            .frame(height: 80)
+                            .frame(height: 70)
                             .background(softWhite)
                             .cornerRadius(30)
                             .overlay(
@@ -244,11 +254,94 @@ struct MindfulnessCheckInView: View {
                     }
                     .padding(.horizontal, 40)
                 }
-                .padding(.bottom, 60)
+                .padding(.bottom, 50)
             }
         }
         .onAppear {
             appState.refreshScreenTimeData()
+            startCountdownTimer()
+        }
+        .onDisappear {
+            stopCountdownTimer()
+        }
+    }
+    
+    // MARK: - Claim Time Button
+    
+    private var claimTimeButton: some View {
+        let isAvailable = timeUntilClaim <= 0
+        
+        return Button(action: {
+            if isAvailable {
+                stopCountdownTimer()
+                appState.startSpinner()
+            }
+        }) {
+            HStack(spacing: 8) {
+                Image(systemName: isAvailable ? "gift.fill" : "clock")
+                    .font(.system(size: 16))
+                
+                if isAvailable {
+                    Text("Claim Time!")
+                        .font(comingSoonFont(size: 16))
+                } else {
+                    Text("Next claim in \(formatCountdown(timeUntilClaim))")
+                        .font(comingSoonFont(size: 14))
+                }
+            }
+            .foregroundColor(isAvailable ? .black : .black.opacity(0.5))
+            .padding(.horizontal, 20)
+            .padding(.vertical, 10)
+            .background(
+                isAvailable ?
+                    LinearGradient(
+                        colors: [goldColor, goldColor.opacity(0.8)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ) :
+                    LinearGradient(
+                        colors: [softWhite, softWhite],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+            )
+            .cornerRadius(20)
+            .overlay(
+                RoundedRectangle(cornerRadius: 20)
+                    .stroke(isAvailable ? goldColor : Color.black.opacity(0.2), lineWidth: isAvailable ? 2 : 1)
+            )
+            .shadow(color: isAvailable ? goldColor.opacity(0.3) : Color.black.opacity(0.05), radius: isAvailable ? 8 : 4, x: 0, y: 2)
+            .scaleEffect(isAvailable ? 1.0 : 0.95)
+            .animation(.spring(response: 0.3), value: isAvailable)
+        }
+        .disabled(!isAvailable)
+    }
+    
+    // MARK: - Countdown Timer
+    
+    private func startCountdownTimer() {
+        // Get initial value
+        timeUntilClaim = appState.timeUntilNextClaim()
+        
+        // Start timer to update every second
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+            timeUntilClaim = appState.timeUntilNextClaim()
+        }
+    }
+    
+    private func stopCountdownTimer() {
+        timer?.invalidate()
+        timer = nil
+    }
+    
+    private func formatCountdown(_ seconds: Double) -> String {
+        let mins = Int(seconds) / 60
+        let secs = Int(seconds) % 60
+        
+        if mins > 0 {
+            return String(format: "%d:%02d", mins, secs)
+        } else {
+            return "\(secs)s"
         }
     }
     

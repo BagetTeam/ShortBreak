@@ -187,6 +187,69 @@ class DatabaseManager {
         return 0
     }
     
+    /// Add specific amount of screen time (in seconds) and update lastGiveAway
+    /// Used by the lottery/spinner feature
+    @discardableResult
+    func addScreenTime(seconds: Double) -> Bool {
+        guard db != nil else { return false }
+        
+        checkAndResetDaily()
+        
+        if let row = queryRow() {
+            let newAllocated = row.allocatedScreenTime + seconds
+            let currentTime = getCurrentUnixTime()
+            
+            let updateSQL = "UPDATE screen_time SET allocated_screen_time = \(newAllocated), last_give_away = \(currentTime);"
+            if executeUpdate(updateSQL) {
+                print("🎰 Added \(Int(seconds))s (\(Int(seconds/60))min) of screen time. Total: \(Int(newAllocated))s")
+                return true
+            }
+        }
+        
+        return false
+    }
+    
+    /// Update only the lastGiveAway timestamp (called when starting the spinner)
+    func updateLastGiveAway() {
+        guard db != nil else { return }
+        
+        let currentTime = getCurrentUnixTime()
+        let updateSQL = "UPDATE screen_time SET last_give_away = \(currentTime);"
+        
+        if executeUpdate(updateSQL) {
+            print("⏰ Updated lastGiveAway to: \(currentTime)")
+        }
+    }
+    
+    /// Check if enough time has passed since last give away
+    /// - Parameter requiredSeconds: Number of seconds that must pass (default 180 for 3 min, use 3600 for 1 hour)
+    /// - Returns: Time remaining in seconds, or 0 if claim is available
+    func timeUntilNextClaim(requiredSeconds: Double = 180) -> Double {
+        guard db != nil else { return requiredSeconds }
+        
+        checkAndResetDaily()
+        
+        if let row = queryRow() {
+            guard let lastGiveAway = row.lastGiveAway else {
+                // Never claimed before, available now
+                return 0
+            }
+            
+            let currentTime = getCurrentUnixTime()
+            let elapsed = currentTime - lastGiveAway
+            let remaining = requiredSeconds - elapsed
+            
+            return max(0, remaining)
+        }
+        
+        return 0
+    }
+    
+    /// Check if claim is available
+    func isClaimAvailable(requiredSeconds: Double = 180) -> Bool {
+        return timeUntilNextClaim(requiredSeconds: requiredSeconds) <= 0
+    }
+    
     // MARK: - Instagram Entry/Exit Tracking
     
     /// Record when user enters Instagram (sets last_went_in to current Unix time)
