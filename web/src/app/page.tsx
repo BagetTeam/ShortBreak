@@ -44,6 +44,38 @@ function MainContent({
   updatePromptProgress: any;
 }) {
   const { state } = useSidebar();
+  const [isScrolling, setIsScrolling] = React.useState(false);
+  const mainRef = React.useRef<HTMLElement | null>(null);
+  const scrollTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  React.useEffect(() => {
+    const mainElement = mainRef.current;
+    if (!mainElement) return;
+
+    const handleScroll = () => {
+      setIsScrolling(true);
+      
+      // Clear existing timeout
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+      
+      // Hide bear immediately when scrolling starts
+      // Show it again after scrolling stops (300ms delay)
+      scrollTimeoutRef.current = setTimeout(() => {
+        setIsScrolling(false);
+      }, 300);
+    };
+
+    mainElement.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      mainElement.removeEventListener('scroll', handleScroll);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <SidebarInset className="!m-0 !rounded-none !shadow-none flex flex-col h-screen overflow-hidden">
@@ -65,9 +97,16 @@ function MainContent({
             </h2>
           </div>
         </header>
-        <main className="flex-1 overflow-y-auto flex flex-col gap-6 px-6 py-6 relative">
+        <main 
+          ref={mainRef}
+          className="flex-1 overflow-y-scroll snap-y snap-mandatory flex flex-col relative"
+        >
           {/* Bear image in top right of main container */}
-          <div className="absolute top-6 right-6 z-10">
+          <div 
+            className={`absolute top-6 right-6 z-10 transition-opacity duration-200 ${
+              isScrolling ? 'opacity-0' : 'opacity-100'
+            }`}
+          >
             <Image
               src="/bear.png"
               alt="Bear"
@@ -185,17 +224,6 @@ export default function Home() {
             </button>
           </div>
         </SidebarContent>
-        <SidebarFooter className="border-t px-4 py-4" style={{ backgroundColor: '#F5F0E6' }}>
-          <button
-            className="w-full rounded-[30px] px-6 py-5 text-lg font-normal text-black border-[1.5px] border-black shadow-sm hover:shadow-md transition-shadow"
-            style={{ 
-              fontFamily: 'var(--font-coming-soon)',
-              backgroundColor: '#FCFCFA'
-            }}
-          >
-            Start a Session
-          </button>
-        </SidebarFooter>
         <SidebarRail />
       </Sidebar>
       <MainContent
