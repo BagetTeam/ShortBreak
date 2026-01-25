@@ -19,6 +19,11 @@
 //  - When user exits (detected via separate automation), we calculate duration
 //  - Duration is subtracted from allocated daily screen time
 //
+//  SCREEN TIME TRACKING:
+//  - When user enters Instagram, we record the entry time (Unix timestamp)
+//  - When user exits (detected via separate automation), we calculate duration
+//  - Duration is subtracted from allocated daily screen time
+//
 
 import SwiftUI
 import UIKit
@@ -65,6 +70,12 @@ class AppState: ObservableObject {
             return
         }
         
+        // Check if this is an exit notification (from the "Is Closed" automation)
+        if let action = queryItems.first(where: { $0.name == "action" })?.value, action == "exit" {
+            handleInstagramExit()
+            return
+        }
+        
         // Get target app from URL (default to Instagram)
         if let target = queryItems.first(where: { $0.name == "target" })?.value {
             targetApp = target
@@ -78,6 +89,7 @@ class AppState: ObservableObject {
         shouldShowSessionSummary = false  // Reset session summary when opening for entry
         shouldShowMindfulness = true
         refreshScreenTimeData()
+        refreshScreenTimeData()
     }
     
     /// Called when user taps "Continue to Instagram"
@@ -90,6 +102,10 @@ class AppState: ObservableObject {
         print("📋 Wrote '\(bypassKey)' to clipboard")
         
         targetApp = app
+        
+        // Record Instagram entry time in database
+        dbManager.recordInstagramEntry()
+        print("⏱️ Recorded Instagram entry time")
         
         // Record Instagram entry time in database
         dbManager.recordInstagramEntry()
