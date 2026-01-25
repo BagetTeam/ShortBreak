@@ -1,6 +1,7 @@
 "use node";
 
 import { action } from "../_generated/server";
+import type { Id } from "../_generated/dataModel";
 import { v } from "convex/values";
 
 import { api } from "../_generated/api";
@@ -38,7 +39,9 @@ const normalizeOutline = (payload: unknown): Omit<OutlineItem, "order">[] => {
         return null;
       }
       const title = (item as { title?: string }).title?.trim();
-      const searchQuery = (item as { searchQuery?: string }).searchQuery?.trim();
+      const searchQuery = (
+        item as { searchQuery?: string }
+      ).searchQuery?.trim();
       if (!title || !searchQuery) {
         return null;
       }
@@ -75,7 +78,7 @@ export const generateOutline = action({
             temperature: 0.4,
           },
         }),
-      }
+      },
     );
 
     if (!response.ok) {
@@ -100,10 +103,13 @@ export const generateOutline = action({
       order: index,
     }));
 
-    const outlineIds = await ctx.runMutation(api.mutations.appendOutlineItems, {
-      promptId: args.promptId,
-      items,
-    });
+    const outlineIds: Array<Id<"outlineItems">> = await ctx.runMutation(
+      api.mutations.appendOutlineItems.appendOutlineItems,
+      {
+        promptId: args.promptId,
+        items,
+      },
+    );
 
     return items.map((item, index) => ({
       ...item,
