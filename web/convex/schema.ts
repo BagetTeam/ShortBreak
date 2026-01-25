@@ -34,7 +34,7 @@ export default defineSchema({
     updatedAt: v.number(),
   })
     .index("by_created_at", ["createdAt"])
-    .index("by_user_id", ["userId"])
+    .index("by_user_id", ["userId"]),
 
   outlineItems: defineTable({
     userId: v.id("users"),
