@@ -1,26 +1,20 @@
 import { query } from "../_generated/server";
 
+import { getClerkId } from "../lib/auth";
+import { getUserByClerkIdOptional } from "../lib/users";
+
 export const listPrompts = query({
   args: {},
   handler: async (ctx) => {
-    try {
-      const prompts = await ctx.db
-        .query("prompts")
-        .withIndex("by_created_at")
-        .collect();
-      
-      // Sort by createdAt descending (newest first)
-      // Filter out any prompts missing createdAt (shouldn't happen, but safety check)
-      return prompts
-        .filter((p) => typeof p.createdAt === "number")
-        .sort((a, b) => b.createdAt - a.createdAt);
-    } catch (error) {
-      console.error("Error in listPrompts:", error);
-      // Fallback: try without index
-      const prompts = await ctx.db.query("prompts").collect();
-      return prompts
-        .filter((p) => typeof p.createdAt === "number")
-        .sort((a, b) => b.createdAt - a.createdAt);
+    const clerkId = await getClerkId(ctx);
+    const user = await getUserByClerkIdOptional(ctx, clerkId);
+    if (!user) {
+      return [];
     }
+    const prompts = await ctx.db
+      .query("prompts")
+      .withIndex("by_user_id", (q) => q.eq("userId", user._id))
+      .collect();
+    return prompts.sort((a, b) => b._creationTime - a._creationTime);
   },
 });

@@ -1,6 +1,9 @@
 import { mutation } from "../_generated/server";
 import { v } from "convex/values";
 
+import { getClerkId } from "../lib/auth";
+import { getUserByClerkIdFromDb } from "../lib/users";
+
 export const appendOutlineItems = mutation({
   args: {
     promptId: v.id("prompts"),
@@ -15,10 +18,17 @@ export const appendOutlineItems = mutation({
     ),
   },
   handler: async (ctx, args) => {
+    const clerkId = await getClerkId(ctx);
+    const user = await getUserByClerkIdFromDb(ctx, clerkId);
+    const prompt = await ctx.db.get(args.promptId);
+    if (!prompt || prompt.userId !== user._id) {
+      throw new Error("Prompt not found");
+    }
     const now = Date.now();
     const created = await Promise.all(
       args.items.map((item) =>
         ctx.db.insert("outlineItems", {
+          userId: user._id,
           promptId: args.promptId,
           title: item.title,
           searchQuery: item.searchQuery,
@@ -40,6 +50,12 @@ export const markTopicFetched = mutation({
     outlineItemId: v.id("outlineItems"),
   },
   handler: async (ctx, args) => {
+    const clerkId = await getClerkId(ctx);
+    const user = await getUserByClerkIdFromDb(ctx, clerkId);
+    const outlineItem = await ctx.db.get(args.outlineItemId);
+    if (!outlineItem || outlineItem.userId !== user._id) {
+      throw new Error("Outline item not found");
+    }
     await ctx.db.patch(args.outlineItemId, {
       videosFetched: true,
     });
@@ -53,6 +69,12 @@ export const updateLastLoadedTopic = mutation({
     topicIndex: v.number(),
   },
   handler: async (ctx, args) => {
+    const clerkId = await getClerkId(ctx);
+    const user = await getUserByClerkIdFromDb(ctx, clerkId);
+    const prompt = await ctx.db.get(args.promptId);
+    if (!prompt || prompt.userId !== user._id) {
+      throw new Error("Prompt not found");
+    }
     await ctx.db.patch(args.promptId, {
       lastLoadedTopicIndex: args.topicIndex,
       updatedAt: Date.now(),
@@ -66,8 +88,12 @@ export const incrementExpansionCount = mutation({
     promptId: v.id("prompts"),
   },
   handler: async (ctx, args) => {
+    const clerkId = await getClerkId(ctx);
+    const user = await getUserByClerkIdFromDb(ctx, clerkId);
     const prompt = await ctx.db.get(args.promptId);
-    if (!prompt) return;
+    if (!prompt || prompt.userId !== user._id) {
+      throw new Error("Prompt not found");
+    }
     
     await ctx.db.patch(args.promptId, {
       expansionCount: (prompt.expansionCount ?? 0) + 1,

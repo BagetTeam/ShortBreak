@@ -5,6 +5,7 @@ import type { Id } from "../_generated/dataModel";
 import { v } from "convex/values";
 
 import { api } from "../_generated/api";
+import { getClerkId } from "../lib/auth";
 
 type OutlineItem = {
   title: string;
@@ -16,14 +17,20 @@ const buildExpansionPrompt = (
   originalPrompt: string,
   existingTopics: string[],
   expansionCount: number,
-  isFromPdf: boolean = false
+  isFromPdf: boolean = false,
 ) => {
   // For PDF-based outlines, always expand with related/deeper topics
   // For regular outlines, alternate between deeper and broader
-  const direction = isFromPdf 
-    ? (expansionCount === 1 ? "related" : expansionCount % 2 === 0 ? "deeper" : "broader")
-    : (expansionCount % 2 === 0 ? "deeper" : "broader");
-  
+  const direction = isFromPdf
+    ? expansionCount === 1
+      ? "related"
+      : expansionCount % 2 === 0
+        ? "deeper"
+        : "broader"
+    : expansionCount % 2 === 0
+      ? "deeper"
+      : "broader";
+
   const pdfContext = isFromPdf
     ? [
         "IMPORTANT CONTEXT: The original outline was extracted from a PDF course syllabus.",
@@ -32,7 +39,7 @@ const buildExpansionPrompt = (
         "",
       ].join("\n")
     : "";
-  
+
   const directionInstructions = {
     related: [
       "Now generate 5-8 RELATED or MORE SPECIFIC topics to continue their learning journey.",
@@ -83,7 +90,7 @@ const buildExpansionPrompt = (
       "- Precalculus review: trigonometric identities",
     ].join("\n"),
   };
-  
+
   return [
     "You are an expert curriculum designer and educational content specialist.",
     "",
@@ -160,7 +167,10 @@ export const expandOutline = action({
   args: {
     promptId: v.id("prompts"),
   },
-  handler: async (ctx, args): Promise<{
+  handler: async (
+    ctx,
+    args,
+  ): Promise<{
     status: "success" | "no_new_topics";
     expansionRound?: number;
     items: Array<{
@@ -172,6 +182,10 @@ export const expandOutline = action({
       outlineItemId?: Id<"outlineItems">;
     }>;
   }> => {
+    const clerkId = await getClerkId(ctx);
+    await ctx.runQuery(api.queries.getUserByClerkId.getUserByClerkId, {
+      clerkId,
+    });
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       throw new Error("Missing GEMINI_API_KEY.");
@@ -188,10 +202,11 @@ export const expandOutline = action({
     // Get existing outline items
     const existingOutlineItems = await ctx.runQuery(
       api.queries.listOutlineItems.listOutlineItems,
-      { promptId: args.promptId }
+      { promptId: args.promptId },
     );
 
-    const existingTopics = existingOutlineItems?.map((item) => item.title) ?? [];
+    const existingTopics =
+      existingOutlineItems?.map((item) => item.title) ?? [];
     const maxOrder = existingOutlineItems?.length
       ? Math.max(...existingOutlineItems.map((item) => item.order))
       : -1;
@@ -199,7 +214,7 @@ export const expandOutline = action({
     // Increment expansion count and get new value
     const newExpansionCount = await ctx.runMutation(
       api.mutations.appendOutlineItems.incrementExpansionCount,
-      { promptId: args.promptId }
+      { promptId: args.promptId },
     );
 
     // Generate new topics with Gemini
@@ -218,7 +233,7 @@ export const expandOutline = action({
                     prompt.prompt,
                     existingTopics,
                     newExpansionCount ?? 1,
-                    prompt.isFromPdf ?? false
+                    prompt.isFromPdf ?? false,
                   ),
                 },
               ],
@@ -229,7 +244,7 @@ export const expandOutline = action({
             temperature: 0.5, // Slightly higher for more creative expansion
           },
         }),
-      }
+      },
     );
 
     if (!response.ok) {
@@ -242,9 +257,11 @@ export const expandOutline = action({
       data?.candidates?.[0]?.content?.parts?.[0] ??
       "";
     const parsed = parseGeminiPayload(text);
-    
+
     // Filter out any topics that already exist (case-insensitive)
-    const existingTitlesLower = new Set(existingTopics.map((t) => t.toLowerCase()));
+    const existingTitlesLower = new Set(
+      existingTopics.map((t) => t.toLowerCase()),
+    );
     const newItems = normalizeOutline(parsed)
       .filter((item) => !existingTitlesLower.has(item.title.toLowerCase()))
       .map((item, index) => ({
@@ -264,7 +281,7 @@ export const expandOutline = action({
       {
         promptId: args.promptId,
         items: newItems,
-      }
+      },
     );
 
     return {

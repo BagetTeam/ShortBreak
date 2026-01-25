@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { History, Plus } from "lucide-react";
+import { History, LogOut, Plus } from "lucide-react";
+import { SignOutButton } from "@clerk/nextjs";
 import { useSidebar } from "@/components/ui/sidebar";
 
 type MobileNavbarProps = {
@@ -69,6 +70,18 @@ export function MobileNavbar({ onNewPrompt, onFeedClick, isScrolling = false }: 
             New
           </span>
         </button>
+
+        <SignOutButton>
+          <button className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full transition-opacity active:opacity-70">
+            <LogOut className="w-5 h-5 text-black" />
+            <span
+              className="text-xs text-black"
+              style={{ fontFamily: "var(--font-coming-soon)" }}
+            >
+              Logout
+            </span>
+          </button>
+        </SignOutButton>
       </div>
     </nav>
   );
