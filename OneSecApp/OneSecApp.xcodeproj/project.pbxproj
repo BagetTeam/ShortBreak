@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		89FDFC4A2F259D78000A4E50 /* AppIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89FDFC492F259D77000A4E50 /* AppIntents.swift */; };
 		89FDFC4C2F259D86000A4E50 /* SetupGuideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89FDFC4B2F259D86000A4E50 /* SetupGuideView.swift */; };
+		89FDFC4E2F25A255000A4E50 /* HomeScreenShortcutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89FDFC4D2F25A255000A4E50 /* HomeScreenShortcutView.swift */; };
 		OBJ_1 /* OneSecApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_2 /* OneSecApp.swift */; };
 		OBJ_3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_4 /* ContentView.swift */; };
 		OBJ_5 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_6 /* AppState.swift */; };
@@ -19,6 +20,8 @@
 /* Begin PBXFileReference section */
 		89FDFC492F259D77000A4E50 /* AppIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIntents.swift; sourceTree = "<group>"; };
 		89FDFC4B2F259D86000A4E50 /* SetupGuideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupGuideView.swift; sourceTree = "<group>"; };
+		89FDFC4D2F25A255000A4E50 /* HomeScreenShortcutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreenShortcutView.swift; sourceTree = "<group>"; };
+		89FDFC4F2F25AFFA000A4E50 /* OneSecApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = OneSecApp.entitlements; sourceTree = "<group>"; };
 		OBJ_10 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		OBJ_11 /* OneSecApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OneSecApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		OBJ_12 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -50,6 +53,8 @@
 		OBJ_15 /* OneSecApp */ = {
 			isa = PBXGroup;
 			children = (
+				89FDFC4F2F25AFFA000A4E50 /* OneSecApp.entitlements */,
+				89FDFC4D2F25A255000A4E50 /* HomeScreenShortcutView.swift */,
 				89FDFC4B2F259D86000A4E50 /* SetupGuideView.swift */,
 				89FDFC492F259D77000A4E50 /* AppIntents.swift */,
 				OBJ_2 /* OneSecApp.swift */,
@@ -137,6 +142,7 @@
 				OBJ_1 /* OneSecApp.swift in Sources */,
 				89FDFC4A2F259D78000A4E50 /* AppIntents.swift in Sources */,
 				OBJ_3 /* ContentView.swift in Sources */,
+				89FDFC4E2F25A255000A4E50 /* HomeScreenShortcutView.swift in Sources */,
 				89FDFC4C2F259D86000A4E50 /* SetupGuideView.swift in Sources */,
 				OBJ_5 /* AppState.swift in Sources */,
 				OBJ_7 /* MindfulnessCheckInView.swift in Sources */,
@@ -270,6 +276,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = OneSecApp/OneSecApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
@@ -301,6 +308,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = OneSecApp/OneSecApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
