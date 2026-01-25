@@ -31,6 +31,19 @@
 			</array>
 		</dict>
 	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.shortbreak.onesec</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>onesec</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
