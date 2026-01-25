@@ -2,7 +2,7 @@
 //  ContentView.swift
 //  OneSecApp
 //
-//  Main content view that shows mindfulness screen or home
+//  Main content view that shows choice screen or home
 //
 
 import SwiftUI

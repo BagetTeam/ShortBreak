@@ -9,10 +9,9 @@
 //  2. Shortcut checks clipboard for "BYPASS_CONFIRM"
 //  3. If "BYPASS_CONFIRM" found → Clear clipboard → Stop Shortcut → Instagram opens
 //  4. If not found → Open OneSecApp
-//  5. User does breathing → Taps "Continue to Instagram"
-//  6. App writes "BYPASS_CONFIRM" to clipboard → Opens Instagram
-//  7. Automation triggers → Shortcut finds "BYPASS_CONFIRM" → Clears & Stops
-//  8. Instagram opens ✓
+//  5. User sees choice: "Continue on Insta" or "Bring me to ShortBreak"
+//  6. If Continue → App writes "BYPASS_CONFIRM" to clipboard → Opens Instagram
+//  7. If ShortBreak → Opens web app instead
 //
 
 import SwiftUI
