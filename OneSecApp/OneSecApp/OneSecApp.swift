@@ -16,6 +16,7 @@ struct OneSecApp: App {
             ContentView()
                 .environmentObject(appState)
                 .onOpenURL { url in
+                    print("📲 Opened with URL: \(url)")
                     appState.handleURL(url)
                 }
         }
