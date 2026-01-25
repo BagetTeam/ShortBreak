@@ -29,3 +29,19 @@ This is the web UI for the ShortBreak project. This UI allows user to prompt the
 - Selecting a prompt from the history makes the UI display the short the User last scrolled to.
 - A prompt in the history sidebar should be deletable.
 
+## Environment
+
+Create `.env.local` with:
+
+```
+NEXT_PUBLIC_CONVEX_URL=
+```
+
+Configure Convex environment variables for actions:
+
+```
+GEMINI_API_KEY=
+YOUTUBE_API_KEY=
+```
+
+Update `convex.json` with your Convex project/team values.
