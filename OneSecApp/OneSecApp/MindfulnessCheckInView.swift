@@ -184,11 +184,15 @@ struct MindfulnessCheckInView: View {
                 Image("Reindeer")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(maxWidth: 280, maxHeight: 280)
-                    .padding(.top, 20)
+                    .frame(maxWidth: 240, maxHeight: 240)
+                    .padding(.top, 10)
+                
+                // Screen Time Display
+                screenTimeDisplay
+                    .padding(.top, 16)
                 
                 Spacer()
-                    .frame(minHeight: 40)
+                    .frame(minHeight: 20)
                 
                 // Description text directly above cards
                 Text("access instagram with limited time or scroll a custom educational feed")
@@ -204,18 +208,20 @@ struct MindfulnessCheckInView: View {
                     Button(action: {
                         handleContinueToInsta()
                     }) {
-                        Text("Continue on Insta")
-                            .font(comingSoonFont(size: 20))
-                            .foregroundColor(.black)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 80)
-                            .background(softWhite)
-                            .cornerRadius(30)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 30)
-                                    .stroke(Color.black, lineWidth: 1.5)
-                            )
-                            .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: 4)
+                        VStack(spacing: 4) {
+                            Text("Continue on Insta")
+                                .font(comingSoonFont(size: 20))
+                                .foregroundColor(.black)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 80)
+                        .background(softWhite)
+                        .cornerRadius(30)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 30)
+                                .stroke(Color.black, lineWidth: 1.5)
+                        )
+                        .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: 4)
                     }
                     .padding(.horizontal, 40)
                     
@@ -238,8 +244,70 @@ struct MindfulnessCheckInView: View {
                     }
                     .padding(.horizontal, 40)
                 }
-                .padding(.bottom, 80)
+                .padding(.bottom, 60)
             }
+        }
+        .onAppear {
+            appState.refreshScreenTimeData()
+        }
+    }
+    
+    // MARK: - Screen Time Display
+    
+    private var screenTimeDisplay: some View {
+        let remaining = appState.screenTimeData?.remainingScreenTime ?? 0
+        let allocated = appState.screenTimeData?.allocatedScreenTime ?? 0
+        let used = appState.screenTimeData?.usedScreenTime ?? 0
+        
+        return VStack(spacing: 8) {
+            // Main remaining time
+            HStack(spacing: 8) {
+                Image(systemName: "clock")
+                    .font(.system(size: 18))
+                    .foregroundColor(remaining < 0 ? .red : .black.opacity(0.7))
+                
+                Text("Time Left:")
+                    .font(comingSoonFont(size: 16))
+                    .foregroundColor(.black.opacity(0.7))
+                
+                Text(formatTime(remaining))
+                    .font(comingSoonFont(size: 18))
+                    .fontWeight(.semibold)
+                    .foregroundColor(remaining < 0 ? .red : .black)
+            }
+            
+            // Subtitle with allocated/used
+            if allocated > 0 || used > 0 {
+                Text("\(formatTime(allocated)) allocated · \(formatTime(used)) used")
+                    .font(comingSoonFont(size: 12))
+                    .foregroundColor(.black.opacity(0.5))
+            } else {
+                Text("No time allocated yet")
+                    .font(comingSoonFont(size: 12))
+                    .foregroundColor(.black.opacity(0.5))
+            }
+        }
+        .padding(.vertical, 12)
+        .padding(.horizontal, 24)
+        .background(softWhite.opacity(0.8))
+        .cornerRadius(16)
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(remaining < 0 ? Color.red.opacity(0.5) : Color.black.opacity(0.2), lineWidth: 1)
+        )
+    }
+    
+    private func formatTime(_ seconds: Double) -> String {
+        let absSeconds = abs(seconds)
+        let mins = Int(absSeconds) / 60
+        let secs = Int(absSeconds) % 60
+        
+        let prefix = seconds < 0 ? "-" : ""
+        
+        if mins > 0 {
+            return "\(prefix)\(mins)m \(secs)s"
+        } else {
+            return "\(prefix)\(secs)s"
         }
     }
     
