@@ -1,12 +1,14 @@
 "use client";
 
 import * as React from "react";
+import { useAction, useMutation } from "convex/react";
 
 import { ChatStream, type ChatMessage } from "@/components/chat-stream";
 import { PromptInput } from "@/components/prompt-input";
 import { ShortsFeed, type ShortsItem } from "@/components/shorts-feed";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
+import { api } from "../../convex/_generated/api";
 
 const demoFeed: ShortsItem[] = [
   {
@@ -44,28 +46,99 @@ const baseMessages: ChatMessage[] = [
 export function LearningWorkspace() {
   const isMobile = useIsMobile();
   const [prompt, setPrompt] = React.useState("");
-  const [fileName, setFileName] = React.useState<string | null>(null);
+  const [file, setFile] = React.useState<File | null>(null);
   const [messages, setMessages] = React.useState<ChatMessage[]>(baseMessages);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const generateUploadUrl = useMutation(api.storage.generateUploadUrl);
+  const createPrompt = useMutation(api.mutations.createPrompt);
+  const generateOutline = useAction(api.actions.generateOutline);
+  const fetchShorts = useAction(api.actions.fetchShorts);
 
-  const handleSubmit = () => {
+  const updateMessageStatus = React.useCallback(
+    (messageId: string, status: ChatMessage["status"], content?: string) => {
+      setMessages((prev) =>
+        prev.map((message) =>
+          message.id === messageId
+            ? {
+                ...message,
+                status,
+                content: content ?? message.content,
+              }
+            : message
+        )
+      );
+    },
+    []
+  );
+
+  const handleSubmit = async () => {
     if (!prompt.trim()) {
       return;
     }
-    const nextMessages: ChatMessage[] = [
-      ...messages,
+    setIsSubmitting(true);
+    const userMessageId = `user-${Date.now()}`;
+    const systemMessageId = `system-${Date.now()}`;
+    setMessages((prev) => [
+      ...prev,
       {
-        id: `user-${Date.now()}`,
+        id: userMessageId,
         role: "user",
         content: prompt,
       },
       {
-        id: `system-${Date.now()}`,
+        id: systemMessageId,
         role: "system",
         status: "pending",
         content: "Drafting your outline and pulling the first clips.",
       },
-    ];
-    setMessages(nextMessages);
+    ]);
+    try {
+      let attachmentId: string | undefined;
+      if (file) {
+        const uploadUrl = await generateUploadUrl();
+        const upload = await fetch(uploadUrl, {
+          method: "POST",
+          headers: { "Content-Type": file.type },
+          body: file,
+        });
+        if (!upload.ok) {
+          throw new Error("File upload failed.");
+        }
+        const json = await upload.json();
+        attachmentId = json.storageId as string | undefined;
+      }
+
+      const promptId = await createPrompt({
+        prompt,
+        attachmentId,
+      });
+
+      const outlineItems = await generateOutline({
+        promptId,
+        prompt,
+      });
+
+      await fetchShorts({
+        promptId,
+        items: outlineItems,
+      });
+
+      updateMessageStatus(
+        systemMessageId,
+        "success",
+        "Your learning feed is ready. Scroll the playlist to begin."
+      );
+    } catch (error) {
+      updateMessageStatus(
+        systemMessageId,
+        "error",
+        error instanceof Error
+          ? error.message
+          : "Something went wrong generating the feed."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -81,8 +154,9 @@ export function LearningWorkspace() {
             value={prompt}
             onChange={setPrompt}
             onSubmit={handleSubmit}
-            fileName={fileName}
-            onFileSelect={(file) => setFileName(file?.name ?? null)}
+            fileName={file?.name ?? null}
+            onFileSelect={setFile}
+            isSubmitting={isSubmitting}
           />
           <div className="rounded-3xl border border-border/60 bg-white/60 p-5 shadow-sm backdrop-blur">
             <p className="text-xs uppercase tracking-[0.35em] text-muted-foreground">
