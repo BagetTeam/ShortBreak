@@ -3,6 +3,7 @@
 //  OneSecApp
 //
 //  Manages app state using clipboard-based bypass
+//  Manages app state using clipboard-based bypass
 //
 //  ARCHITECTURE:
 //  1. User opens Instagram → Automation triggers → Shortcut runs
@@ -12,6 +13,11 @@
 //  5. User sees choice: "Continue on Insta" or "Bring me to ShortBreak"
 //  6. If Continue → App writes "BYPASS_CONFIRM" to clipboard → Opens Instagram
 //  7. If ShortBreak → Opens web app instead
+//
+//  SCREEN TIME TRACKING:
+//  - When user enters Instagram, we record the entry time (Unix timestamp)
+//  - When user exits (detected via separate automation), we calculate duration
+//  - Duration is subtracted from allocated daily screen time
 //
 //  SCREEN TIME TRACKING:
 //  - When user enters Instagram, we record the entry time (Unix timestamp)
@@ -51,6 +57,7 @@ class AppState: ObservableObject {
     }
     
     /// Called when app is opened via URL scheme (onesec://?target=instagram://)
+    /// Called when app is opened via URL scheme (onesec://?target=instagram://)
     func handleURL(_ url: URL) {
         guard url.scheme == "onesec" else { return }
         
@@ -63,16 +70,26 @@ class AppState: ObservableObject {
             return
         }
         
+        // Check if this is an exit notification (from the "Is Closed" automation)
+        if let action = queryItems.first(where: { $0.name == "action" })?.value, action == "exit" {
+            handleInstagramExit()
+            return
+        }
+        
         // Get target app from URL (default to Instagram)
         if let target = queryItems.first(where: { $0.name == "target" })?.value {
             targetApp = target
+        } else {
+            targetApp = "instagram://"
         } else {
             targetApp = "instagram://"
         }
         
         print("🧘 Showing mindfulness screen for: \(targetApp)")
         shouldShowSessionSummary = false  // Reset session summary when opening for entry
+        shouldShowSessionSummary = false  // Reset session summary when opening for entry
         shouldShowMindfulness = true
+        refreshScreenTimeData()
         refreshScreenTimeData()
     }
     
@@ -81,8 +98,15 @@ class AppState: ObservableObject {
         // Write bypass key to clipboard
         UIPasteboard.general.string = bypassKey
         print("📋 Wrote '\(bypassKey)' to clipboard")
+        // Write bypass key to clipboard
+        UIPasteboard.general.string = bypassKey
+        print("📋 Wrote '\(bypassKey)' to clipboard")
         
         targetApp = app
+        
+        // Record Instagram entry time in database
+        dbManager.recordInstagramEntry()
+        print("⏱️ Recorded Instagram entry time")
         
         // Record Instagram entry time in database
         dbManager.recordInstagramEntry()
@@ -106,7 +130,12 @@ class AppState: ObservableObject {
         if let duration = dbManager.recordInstagramExit() {
             print("⏱️ Instagram session ended. Duration: \(Int(duration)) seconds")
             lastSessionDuration = duration
+            lastSessionDuration = duration
             refreshScreenTimeData()
+            
+            // Show session summary screen
+            shouldShowMindfulness = false
+            shouldShowSessionSummary = true
             
             // Show session summary screen
             shouldShowMindfulness = false
@@ -116,6 +145,9 @@ class AppState: ObservableObject {
             if dbManager.hasExceededScreenTime() {
                 print("⚠️ User has exceeded allocated screen time!")
             }
+        } else {
+            // No entry time was recorded, just refresh data
+            refreshScreenTimeData()
         } else {
             // No entry time was recorded, just refresh data
             refreshScreenTimeData()
