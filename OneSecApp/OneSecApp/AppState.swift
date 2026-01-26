@@ -206,15 +206,17 @@ class AppState: ObservableObject {
         // Weights for each time option (higher = more common)
         // Total weight = 100
         let options: [(minutes: Int, weight: Int)] = [
-            (1, 25),   // 25% chance
-            (2, 22),   // 22% chance
-            (3, 18),   // 18% chance
-            (5, 14),   // 14% chance
-            (8, 10),   // 10% chance
-            (10, 6),   // 6% chance
+            (1, 20),   // 25% chance
+            (2, 18),   // 22% chance
+            (3, 15),   // 18% chance
+            (5, 10),   // 14% chance
+            (-1, 12),   // 12% chance
+            (8, 8),   // 10% chance
+            (10, 5),   // 6% chance
             (15, 3),   // 3% chance
-            (20, 1),   // 1% chance
+            (20, 2),   // 1% chance
             (30, 1),   // 1% chance
+            (-5, 6),   // 6% chance
         ]
         
         let totalWeight = options.reduce(0) { $0 + $1.weight }
@@ -232,5 +234,5 @@ class AppState: ObservableObject {
     }
     
     /// Get all possible time options for the spinner display
-    static let spinnerOptions: [Int] = [1, 2, 3, 5, 8, 10, 15, 20, 30]
+    static let spinnerOptions: [Int] = [1, 2, 3, 5, -1, 8, 10, 15, 20, 30, -5]
 }

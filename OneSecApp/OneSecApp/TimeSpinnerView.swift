@@ -18,6 +18,7 @@ struct TimeSpinnerView: View {
     @State private var isSpinning = true
     @State private var spinSpeed: Double = 0.05
     @State private var showResult = false
+    @State private var isNegative = false
     
     // All possible time options
     private let options = AppState.spinnerOptions
@@ -26,6 +27,7 @@ struct TimeSpinnerView: View {
     private let beigeBackground = Color(red: 0.96, green: 0.94, blue: 0.90)
     private let softWhite = Color(red: 0.99, green: 0.99, blue: 0.98)
     private let goldColor = Color(red: 1.0, green: 0.84, blue: 0.0)
+    private let redColor = Color(red: 1.0, green: 0.2667, blue: 0.0)
     
     init() {
         registerFonts()
@@ -83,7 +85,7 @@ struct TimeSpinnerView: View {
                 Spacer()
                 
                 // Spinner title
-                Text(showResult ? "You Won!" : "Spinning...")
+                Text(showResult ? (isNegative ? "You Lost!" : "You Won!") : "Spinning...")
                     .font(comingSoonFont(size: 28))
                     .foregroundColor(.black)
                     .padding(.bottom, 20)
@@ -91,9 +93,15 @@ struct TimeSpinnerView: View {
                 // Spinner carousel
                 ZStack {
                     // Background glow for result
-                    if showResult {
+                    if showResult && !isNegative {
                         Circle()
                             .fill(goldColor.opacity(0.3))
+                            .frame(width: 250, height: 250)
+                            .blur(radius: 30)
+                    }
+                    else if showResult && isNegative {
+                        Circle()
+                            .fill(redColor.opacity(0.3))
                             .frame(width: 250, height: 250)
                             .blur(radius: 30)
                     }
@@ -109,8 +117,8 @@ struct TimeSpinnerView: View {
                         // Current value (highlighted)
                         Text("\(options[currentIndex])m")
                             .font(shizuruFont(size: showResult ? 80 : 64))
-                            .foregroundColor(showResult ? goldColor : .black)
-                            .shadow(color: showResult ? goldColor.opacity(0.5) : .clear, radius: 10)
+                            .foregroundColor(showResult ? (isNegative ? redColor : goldColor) : .black)
+                            .shadow(color: showResult ? (isNegative ? redColor.opacity(0.5) : goldColor.opacity(0.5)) : .clear, radius: 10)
                             .scaleEffect(showResult ? 1.1 : 1.0)
                             .animation(.spring(response: 0.3), value: showResult)
                             .animation(.easeInOut(duration: spinSpeed), value: currentIndex)
@@ -129,7 +137,7 @@ struct TimeSpinnerView: View {
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 30)
-                            .stroke(showResult ? goldColor : Color.black.opacity(0.3), lineWidth: showResult ? 3 : 1.5)
+                            .stroke(showResult ? (isNegative ? redColor : goldColor) : Color.black.opacity(0.3), lineWidth: showResult ? 3 : 1.5)
                     )
                 }
                 
@@ -142,7 +150,7 @@ struct TimeSpinnerView: View {
                             .font(comingSoonFont(size: 24))
                             .foregroundColor(.black)
                         
-                        Text("added to your screen time!")
+                        Text(isNegative ? "removed from your screen time!" : "added to your screen time!")
                             .font(comingSoonFont(size: 16))
                             .foregroundColor(.black.opacity(0.6))
                     }
@@ -205,6 +213,7 @@ struct TimeSpinnerView: View {
         func spin() {
             guard stepCount < totalSteps else {
                 // Animation complete - show result
+                isNegative = options[targetIndex] < 0
                 withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
                     showResult = true
                     isSpinning = false
