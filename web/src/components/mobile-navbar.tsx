@@ -1,20 +1,24 @@
 "use client";
 
 import * as React from "react";
-import { History, Plus } from "lucide-react";
+import { History, LogOut, Plus } from "lucide-react";
+import { SignOutButton } from "@clerk/nextjs";
 import { useSidebar } from "@/components/ui/sidebar";
 
 type MobileNavbarProps = {
   onNewPrompt: () => void;
   onFeedClick: () => void;
+  isScrolling?: boolean;
 };
 
-export function MobileNavbar({ onNewPrompt, onFeedClick }: MobileNavbarProps) {
+export function MobileNavbar({ onNewPrompt, onFeedClick, isScrolling = false }: MobileNavbarProps) {
   const { toggleSidebar } = useSidebar();
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 border-t border-black/10"
+      className={`fixed bottom-0 left-0 right-0 z-50 border-t border-black/10 transition-transform duration-300 ${
+        isScrolling ? 'translate-y-full' : 'translate-y-0'
+      }`}
       style={{ backgroundColor: '#F5F0E6' }}
     >
       <div className="flex items-center justify-around h-12 px-4 pb-1">
@@ -66,6 +70,18 @@ export function MobileNavbar({ onNewPrompt, onFeedClick }: MobileNavbarProps) {
             New
           </span>
         </button>
+
+        <SignOutButton>
+          <button className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full transition-opacity active:opacity-70">
+            <LogOut className="w-5 h-5 text-black" />
+            <span
+              className="text-xs text-black"
+              style={{ fontFamily: "var(--font-coming-soon)" }}
+            >
+              Logout
+            </span>
+          </button>
+        </SignOutButton>
       </div>
     </nav>
   );

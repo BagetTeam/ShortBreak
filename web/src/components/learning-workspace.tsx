@@ -21,6 +21,14 @@ type LearningWorkspaceProps = {
       duration?: string;
     };
   }>;
+  outlineItems?: Array<{
+    _id: Id<"outlineItems">;
+    title: string;
+    searchQuery: string;
+    order: number;
+    videosFetched?: boolean;
+    isExpansion?: boolean;
+  }>;
   activePromptId?: Id<"prompts"> | null;
   onPromptCreated?: (promptId: Id<"prompts">) => void;
   activeIndex?: number;
@@ -31,6 +39,7 @@ type LearningWorkspaceProps = {
 
 export function LearningWorkspace({
   feedItems,
+  outlineItems,
   activePromptId,
   onPromptCreated,
   activeIndex,
@@ -54,14 +63,15 @@ export function LearningWorkspace({
   );
   const createPrompt = useMutation(api.mutations.createPrompt.createPrompt);
   const generateOutline = useAction(api.actions.generateOutline.generateOutline);
-  const fetchShorts = useAction(api.actions.fetchShorts.fetchShorts);
+  const fetchNextTopic = useAction(api.actions.fetchNextTopic.fetchNextTopic);
 
   const handleSubmit = async () => {
-    if (!prompt.trim()) {
+    // Allow submission if there's text OR a file attached
+    if (!prompt.trim() && !file) {
       return;
     }
     setErrorMessage(null);
-    setStatusMessage("Generating subjects with Gemini...");
+    setStatusMessage("Generating learning outline with Gemini...");
     setIsSubmitting(true);
     try {
       let attachmentId: string | undefined;
@@ -79,15 +89,23 @@ export function LearningWorkspace({
         attachmentId = json.storageId as string | undefined;
       }
 
+      // Use a default prompt if only PDF is provided
+      const effectivePrompt = prompt.trim() || (file ? "Extract the course outline from the attached PDF" : "");
+      
       const promptId = await createPrompt({
-        prompt,
+        prompt: effectivePrompt,
         attachmentId,
       });
       onPromptCreated?.(promptId);
 
+      // Step 1: Generate comprehensive outline from Gemini
+      setStatusMessage(attachmentId 
+        ? "Parsing PDF and creating course outline..." 
+        : "Creating comprehensive course outline...");
       const outlineItems = await generateOutline({
         promptId,
-        prompt,
+        prompt: effectivePrompt,
+        attachmentId,
       });
       if (!outlineItems.length) {
         setErrorMessage(
@@ -97,15 +115,19 @@ export function LearningWorkspace({
         return;
       }
 
-      setStatusMessage("Finding matching shorts...");
-      const fetchedItems = await fetchShorts({
+      // Step 2: Fetch ONLY the first topic's videos (lazy loading)
+      setStatusMessage(`Loading videos for: ${outlineItems[0]?.title ?? "first topic"}...`);
+      
+      const result = await fetchNextTopic({
         promptId,
-        items: outlineItems,
       });
-      if (!fetchedItems.length) {
+
+      if (result.status === "error" || result.items.length === 0) {
         setErrorMessage(
-          "No videos were found for this topic. Try tweaking the prompt."
+          "No videos were found for the first topic. Try tweaking the prompt."
         );
+      } else {
+        setStatusMessage(null);
       }
 
       setPrompt("");
@@ -159,6 +181,31 @@ export function LearningWorkspace({
       {errorMessage ? (
         <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700" style={{ fontFamily: 'var(--font-coming-soon)' }}>
           {errorMessage}
+        </div>
+      ) : null}
+      {outlineItems && outlineItems.length > 0 ? (
+        <div className="rounded-2xl border border-black/10 bg-white/70 px-6 py-4" style={{ fontFamily: 'var(--font-coming-soon)' }}>
+          <h3 className="text-lg font-semibold mb-3" style={{ fontFamily: 'var(--font-shizuru)' }}>
+            Learning Topics
+          </h3>
+          <ul className="space-y-2">
+            {outlineItems
+              .sort((a, b) => a.order - b.order)
+              .map((item, index) => {
+                const hasVideo = item.videosFetched || feedItems?.some(feedItem => feedItem.topicTitle === item.title);
+                const isExpansion = item.isExpansion;
+                return (
+                  <li key={item._id} className="flex items-start gap-3">
+                    <span className="text-sm font-medium text-black/60 min-w-[24px]">{index + 1}.</span>
+                    <span className={`text-sm ${hasVideo ? 'text-black' : 'text-black/40'}`}>
+                      {item.title}
+                      {hasVideo && <span className="ml-2 text-xs text-green-600">✓</span>}
+                      {isExpansion && <span className="ml-2 text-xs text-purple-500">(expanded)</span>}
+                    </span>
+                  </li>
+                );
+              })}
+          </ul>
         </div>
       ) : null}
       <div
