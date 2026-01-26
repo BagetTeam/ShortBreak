@@ -21,6 +21,7 @@
 
 import SwiftUI
 import UIKit
+import UserNotifications
 
 // MARK: - App State
 class AppState: ObservableObject {
@@ -70,24 +71,51 @@ class AppState: ObservableObject {
             targetApp = "instagram://"
         }
         
-        print("🧘 Showing mindfulness screen for: \(targetApp)")
         shouldShowSessionSummary = false  // Reset session summary when opening for entry
         shouldShowMindfulness = true
         refreshScreenTimeData()
+    }
+
+    func handleTimedNotification() {
+        let content = UNMutableNotificationContent()
+        content.title = "Screen Time Alert"
+        content.body = "You have surpassed your screen time limit"
+        content.sound = .default
+    
+        let timeLimit = dbManager.getRemainingScreenTime()
+        if timeLimit < 1 {
+            return
+        }
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeLimit, repeats: false)
+        let request = UNNotificationRequest(
+            identifier: "ShortBreak",
+            content: content,
+            trigger: trigger
+        )
+
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                print("Error scheduling notification: \(error)")
+            }
+        }
+    }
+
+    func handleCancelTimedNotification() {
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["ShortBreak"])
+        UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: ["ShortBreak"])
     }
     
     /// Called when user taps "Continue to Instagram"
     func allowAccess(to app: String) {
         // Write bypass key to clipboard
         UIPasteboard.general.string = bypassKey
-        print("📋 Wrote '\(bypassKey)' to clipboard")
         
         targetApp = app
         
         // Record Instagram entry time in database
         dbManager.recordInstagramEntry()
-        print("⏱️ Recorded Instagram entry time")
         
+        self.handleTimedNotification()
         // Small delay to ensure clipboard is set, then open Instagram
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             self.openTargetApp()
@@ -96,15 +124,16 @@ class AppState: ObservableObject {
     
     private func openTargetApp() {
         if let url = URL(string: targetApp) {
-            print("🚀 Opening: \(targetApp)")
+            print("Opening: \(targetApp)")
             UIApplication.shared.open(url)
         }
     }
     
     /// Called when user exits Instagram (via separate automation)
     func handleInstagramExit() {
+        handleCancelTimedNotification()
         if let duration = dbManager.recordInstagramExit() {
-            print("⏱️ Instagram session ended. Duration: \(Int(duration)) seconds")
+            print("Instagram session ended. Duration: \(Int(duration)) seconds")
             lastSessionDuration = duration
             refreshScreenTimeData()
             
@@ -112,9 +141,8 @@ class AppState: ObservableObject {
             shouldShowMindfulness = false
             shouldShowSessionSummary = true
             
-            // Check if user has exceeded their allocated time
             if dbManager.hasExceededScreenTime() {
-                print("⚠️ User has exceeded allocated screen time!")
+                print("User has exceeded allocated screen time!")
             }
         } else {
             // No entry time was recorded, just refresh data
