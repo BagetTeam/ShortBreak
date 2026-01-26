@@ -20,7 +20,7 @@ const shizuru = Shizuru({
 });
 
 export const metadata: Metadata = {
-  title: "REELlyCooked",
+  title: "REELyCooked",
   description: "Stop Doomscrolling by getting sick of it",
 };
 

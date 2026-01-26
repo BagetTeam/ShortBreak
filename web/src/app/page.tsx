@@ -118,7 +118,7 @@ function MainContent({
                 className={`text-2xl font-normal text-black ${state === "collapsed" ? "visible" : "invisible"}`}
                 style={{ fontFamily: "var(--font-shizuru)" }}
               >
-                REELlyCooked
+                REELyCooked
               </h2>
             </div>
           </header>
@@ -133,7 +133,7 @@ function MainContent({
               className="text-2xl font-normal text-black"
               style={{ fontFamily: "var(--font-shizuru)" }}
             >
-              REELlyCooked
+              REELyCooked
             </h2>
           </header>
         )}
@@ -320,7 +320,7 @@ export default function Home() {
             className="text-3xl font-normal text-black"
             style={{ fontFamily: "var(--font-shizuru)" }}
           >
-            REELlyCooked
+            REELyCooked
           </h1>
           <p className="mt-4 text-lg text-black/80">
             You are not authenticated.
@@ -368,7 +368,7 @@ export default function Home() {
                 className="text-2xl font-normal text-black"
                 style={{ fontFamily: "var(--font-shizuru)" }}
               >
-                REELlyCooked
+                REELyCooked
               </h1>
             </div>
             <SidebarTrigger />

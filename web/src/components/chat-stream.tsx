@@ -27,7 +27,7 @@ export function ChatStream({ messages, className }: ChatStreamProps) {
         >
           <div className="flex items-center justify-between gap-3">
             <span className="font-medium">
-              {message.role === "user" ? "You" : "REELlyCooked"}
+              {message.role === "user" ? "You" : "REELyCooked"}
             </span>
             {message.status ? (
               <span
