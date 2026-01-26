@@ -3,6 +3,7 @@
 //  OneSecApp
 //
 //  Manages app state using clipboard-based bypass
+//  Manages app state using clipboard-based bypass
 //
 //  ARCHITECTURE:
 //  1. User opens Instagram → Automation triggers → Shortcut runs
@@ -12,6 +13,11 @@
 //  5. User sees choice: "Continue on Insta" or "Bring me to ShortBreak"
 //  6. If Continue → App writes "BYPASS_CONFIRM" to clipboard → Opens Instagram
 //  7. If ShortBreak → Opens web app instead
+//
+//  SCREEN TIME TRACKING:
+//  - When user enters Instagram, we record the entry time (Unix timestamp)
+//  - When user exits (detected via separate automation), we calculate duration
+//  - Duration is subtracted from allocated daily screen time
 //
 //  SCREEN TIME TRACKING:
 //  - When user enters Instagram, we record the entry time (Unix timestamp)
@@ -52,6 +58,7 @@ class AppState: ObservableObject {
     }
     
     /// Called when app is opened via URL scheme (onesec://?target=instagram://)
+    /// Called when app is opened via URL scheme (onesec://?target=instagram://)
     func handleURL(_ url: URL) {
         guard url.scheme == "onesec" else { return }
         
@@ -64,9 +71,17 @@ class AppState: ObservableObject {
             return
         }
         
+        // Check if this is an exit notification (from the "Is Closed" automation)
+        if let action = queryItems.first(where: { $0.name == "action" })?.value, action == "exit" {
+            handleInstagramExit()
+            return
+        }
+        
         // Get target app from URL (default to Instagram)
         if let target = queryItems.first(where: { $0.name == "target" })?.value {
             targetApp = target
+        } else {
+            targetApp = "instagram://"
         } else {
             targetApp = "instagram://"
         }
@@ -144,6 +159,9 @@ class AppState: ObservableObject {
             if dbManager.hasExceededScreenTime() {
                 print("User has exceeded allocated screen time!")
             }
+        } else {
+            // No entry time was recorded, just refresh data
+            refreshScreenTimeData()
         } else {
             // No entry time was recorded, just refresh data
             refreshScreenTimeData()
@@ -234,15 +252,17 @@ class AppState: ObservableObject {
         // Weights for each time option (higher = more common)
         // Total weight = 100
         let options: [(minutes: Int, weight: Int)] = [
-            (1, 25),   // 25% chance
-            (2, 22),   // 22% chance
-            (3, 18),   // 18% chance
-            (5, 14),   // 14% chance
-            (8, 10),   // 10% chance
-            (10, 6),   // 6% chance
+            (1, 20),   // 25% chance
+            (2, 18),   // 22% chance
+            (3, 15),   // 18% chance
+            (5, 10),   // 14% chance
+            (-1, 12),   // 12% chance
+            (8, 8),   // 10% chance
+            (10, 5),   // 6% chance
             (15, 3),   // 3% chance
-            (20, 1),   // 1% chance
+            (20, 2),   // 1% chance
             (30, 1),   // 1% chance
+            (-5, 6),   // 6% chance
         ]
         
         let totalWeight = options.reduce(0) { $0 + $1.weight }
@@ -260,5 +280,5 @@ class AppState: ObservableObject {
     }
     
     /// Get all possible time options for the spinner display
-    static let spinnerOptions: [Int] = [1, 2, 3, 5, 8, 10, 15, 20, 30]
+    static let spinnerOptions: [Int] = [1, 2, 3, 5, -1, 8, 10, 15, 20, 30, -5]
 }
