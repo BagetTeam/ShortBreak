@@ -22,12 +22,12 @@ export function ChatStream({ messages, className }: ChatStreamProps) {
             "rounded-2xl border border-border/60 px-4 py-3 text-sm leading-relaxed",
             message.role === "user"
               ? "ml-auto bg-foreground text-background"
-              : "bg-white/80 text-foreground"
+              : "bg-white/80 text-foreground",
           )}
         >
           <div className="flex items-center justify-between gap-3">
             <span className="font-medium">
-              {message.role === "user" ? "You" : "ShortBreak"}
+              {message.role === "user" ? "You" : "REELlyCooked"}
             </span>
             {message.status ? (
               <span
@@ -35,7 +35,7 @@ export function ChatStream({ messages, className }: ChatStreamProps) {
                   "text-xs uppercase tracking-[0.2em]",
                   message.status === "pending" && "text-muted-foreground",
                   message.status === "success" && "text-emerald-600",
-                  message.status === "error" && "text-rose-600"
+                  message.status === "error" && "text-rose-600",
                 )}
               >
                 {message.status}

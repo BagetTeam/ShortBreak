@@ -20,8 +20,8 @@ const shizuru = Shizuru({
 });
 
 export const metadata: Metadata = {
-  title: "ShortBreak",
-  description: "Stop Doomscrolling and be productive for once smh...",
+  title: "REELlyCooked",
+  description: "Stop Doomscrolling by getting sick of it",
 };
 
 export default function RootLayout({
