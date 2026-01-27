@@ -1,6 +1,6 @@
 # ShortBreak
 
-A learning and mindfulness platform with a web application for YouTube Shorts-based learning and an iOS app for mindfulness check-ins and session tracking.
+A duel-platform to solve the *reel* cause of your scrolling addiction. It is both an iOS mobile app that allocates screen time for you, giving you a sense of responsibility over your time spent scrolling, and a web application for micro learning through scrolling. 
 
 ## Project Structure
 
