@@ -82,8 +82,6 @@ class AppState: ObservableObject {
             targetApp = target
         } else {
             targetApp = "instagram://"
-        } else {
-            targetApp = "instagram://"
         }
         
         shouldShowSessionSummary = false  // Reset session summary when opening for entry
@@ -162,10 +160,7 @@ class AppState: ObservableObject {
         } else {
             // No entry time was recorded, just refresh data
             refreshScreenTimeData()
-        } else {
-            // No entry time was recorded, just refresh data
-            refreshScreenTimeData()
-        }
+        } 
     }
     
     /// Add random screen time allocation (for hourly trigger)

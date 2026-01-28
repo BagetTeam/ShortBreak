@@ -29,16 +29,12 @@ struct ContentView: View {
 
 struct HomeView: View {
     @EnvironmentObject var appState: AppState
-    @EnvironmentObject var appState: AppState
     @State private var showSetupGuide = false
     
     // Shortcut links
     let entryShortcutURL = "https://www.icloud.com/shortcuts/72d884ee96b44ecdb8e9a452cb03a1ad"  // ShortBreak Entry
     let exitShortcutURL = "https://www.icloud.com/shortcuts/7a5f3e08e76d440a96d1bc55fe495e9f"   // ShortBreak Exit
-    // Shortcut links
-    let entryShortcutURL = "https://www.icloud.com/shortcuts/72d884ee96b44ecdb8e9a452cb03a1ad"  // ShortBreak Entry
-    let exitShortcutURL = "https://www.icloud.com/shortcuts/7a5f3e08e76d440a96d1bc55fe495e9f"   // ShortBreak Exit
-    
+   
     // Beige background color
     private let beigeBackground = Color(red: 0.96, green: 0.94, blue: 0.90)
     // Soft white for cards
@@ -194,15 +190,12 @@ struct HomeView: View {
                 // Setup section
                 VStack(spacing: 12) {
                     Text("Setup in 3 steps")
-                VStack(spacing: 12) {
-                    Text("Setup in 3 steps")
                         .font(comingSoonFont(size: 18))
                         .foregroundColor(.black)
                     
                     // Step 1: Install Entry Shortcut
                     // Step 1: Install Entry Shortcut
                     Button(action: {
-                        if let url = URL(string: entryShortcutURL) {
                         if let url = URL(string: entryShortcutURL) {
                             UIApplication.shared.open(url)
                         }
@@ -212,7 +205,6 @@ struct HomeView: View {
                                 .font(comingSoonFont(size: 14))
                                 .fontWeight(.bold)
                                 .foregroundColor(.black)
-                                .frame(width: 28, height: 28)
                                 .frame(width: 28, height: 28)
                                 .background(softWhite)
                                 .overlay(
@@ -229,17 +221,12 @@ struct HomeView: View {
                         }
                         .padding(.horizontal, 16)
                         .padding(.vertical, 14)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 14)
                         .background(softWhite)
-                        .cornerRadius(25)
                         .cornerRadius(25)
                         .overlay(
                             RoundedRectangle(cornerRadius: 25)
-                            RoundedRectangle(cornerRadius: 25)
                                 .stroke(Color.black, lineWidth: 1.5)
                         )
-                        .shadow(color: Color.black.opacity(0.1), radius: 6, x: 0, y: 3)
                         .shadow(color: Color.black.opacity(0.1), radius: 6, x: 0, y: 3)
                     }
                     
@@ -291,15 +278,12 @@ struct HomeView: View {
                                 .fontWeight(.bold)
                                 .foregroundColor(.black)
                                 .frame(width: 28, height: 28)
-                                .frame(width: 28, height: 28)
                                 .background(softWhite)
                                 .overlay(
                                     Circle()
                                         .stroke(Color.black, lineWidth: 1.5)
                                 )
                                 .clipShape(Circle())
-                            Text("Create Automations")
-                                .font(comingSoonFont(size: 16))
                             Text("Create Automations")
                                 .font(comingSoonFont(size: 16))
                                 .foregroundColor(.black)
@@ -309,22 +293,16 @@ struct HomeView: View {
                         }
                         .padding(.horizontal, 16)
                         .padding(.vertical, 14)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 14)
                         .background(softWhite)
                         .cornerRadius(25)
-                        .cornerRadius(25)
                         .overlay(
-                            RoundedRectangle(cornerRadius: 25)
                             RoundedRectangle(cornerRadius: 25)
                                 .stroke(Color.black, lineWidth: 1.5)
                         )
                         .shadow(color: Color.black.opacity(0.1), radius: 6, x: 0, y: 3)
-                        .shadow(color: Color.black.opacity(0.1), radius: 6, x: 0, y: 3)
                     }
                 }
                 .padding(.horizontal, 40)
-                .padding(.bottom, 60)
                 .padding(.bottom, 60)
             }
         }
@@ -339,94 +317,21 @@ struct HomeView: View {
 struct AutomationGuideView: View {
     @Environment(\.dismiss) var dismiss
     @State private var selectedTab = 0
-    @State private var selectedTab = 0
     
     var body: some View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 20) {
-                VStack(spacing: 20) {
                     Image(systemName: "gearshape.2.fill")
-                        .font(.system(size: 40))
                         .font(.system(size: 40))
                         .foregroundColor(.green)
                         .padding(.top, 30)
-                        .padding(.top, 30)
                     
-                    Text("Create 2 Automations")
                     Text("Create 2 Automations")
                         .font(.title2)
                         .fontWeight(.bold)
                     
-                    Text("You need both automations to track screen time")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal)
                     
-                    // Tab picker
-                    Picker("Automation", selection: $selectedTab) {
-                        Text("Entry").tag(0)
-                        Text("Exit").tag(1)
-                    }
-                    .pickerStyle(.segmented)
-                    .padding(.horizontal, 24)
-                    
-                    if selectedTab == 0 {
-                        // Entry Automation
-                        VStack(alignment: .leading, spacing: 4) {
-                            HStack {
-                                Image(systemName: "arrow.right.circle.fill")
-                                    .foregroundColor(.blue)
-                                Text("When Instagram Opens")
-                                    .font(.headline)
-                            }
-                            .padding(.bottom, 8)
-                            
-                            VStack(alignment: .leading, spacing: 16) {
-                                StepRow(number: "1", text: "Open the Shortcuts app")
-                                StepRow(number: "2", text: "Go to the Automation tab")
-                                StepRow(number: "3", text: "Tap + → Create Personal Automation")
-                                StepRow(number: "4", text: "Select App → Instagram")
-                                StepRow(number: "5", text: "Choose 'Is Opened' → Tap Next")
-                                StepRow(number: "6", text: "Add action: Run Shortcut")
-                                StepRow(number: "7", text: "Select the 'Entry' shortcut")
-                                StepRow(number: "8", text: "Tap Next → Turn OFF 'Ask Before Running'")
-                                StepRow(number: "9", text: "Tap Done!")
-                            }
-                        }
-                        .padding(20)
-                        .background(Color.blue.opacity(0.05))
-                        .cornerRadius(16)
-                        .padding(.horizontal, 24)
-                    } else {
-                        // Exit Automation
-                        VStack(alignment: .leading, spacing: 4) {
-                            HStack {
-                                Image(systemName: "arrow.left.circle.fill")
-                                    .foregroundColor(.orange)
-                                Text("When Instagram Closes")
-                                    .font(.headline)
-                            }
-                            .padding(.bottom, 8)
-                            
-                            VStack(alignment: .leading, spacing: 16) {
-                                StepRow(number: "1", text: "Open the Shortcuts app")
-                                StepRow(number: "2", text: "Go to the Automation tab")
-                                StepRow(number: "3", text: "Tap + → Create Personal Automation")
-                                StepRow(number: "4", text: "Select App → Instagram")
-                                StepRow(number: "5", text: "Choose 'Is Closed' → Tap Next")
-                                StepRow(number: "6", text: "Add action: Run Shortcut")
-                                StepRow(number: "7", text: "Select the 'Exit' shortcut")
-                                StepRow(number: "8", text: "Tap Next → Turn OFF 'Ask Before Running'")
-                                StepRow(number: "9", text: "Tap Done!")
-                            }
-                        }
-                        .padding(20)
-                        .background(Color.orange.opacity(0.05))
-                        .cornerRadius(16)
-                        .padding(.horizontal, 24)
-                    }
                     Text("You need both automations to track screen time")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
@@ -509,20 +414,15 @@ struct AutomationGuideView: View {
                         .foregroundColor(.white)
                         .padding()
                         .frame(maxWidth: .infinity)
-                        .frame(maxWidth: .infinity)
                         .background(Color.blue)
                         .cornerRadius(12)
                     }
                     .padding(.horizontal, 24)
                     .padding(.top, 10)
-                    .padding(.horizontal, 24)
-                    .padding(.top, 10)
                     
-                    Spacer(minLength: 30)
                     Spacer(minLength: 30)
                 }
             }
-            .navigationTitle("Setup Automations")
             .navigationTitle("Setup Automations")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -555,3 +455,4 @@ struct StepRow: View {
         }
     }
 }
+
