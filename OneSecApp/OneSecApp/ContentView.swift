@@ -184,6 +184,20 @@ struct HomeView: View {
                 }
                 .padding(.top, 20)
                 
+                // TODO: Remove this in production
+                Button(action: {
+                    appState.resetAllocatedTimeToZero()
+                }) {
+                    Text("Reset Time to 0")
+                        .font(comingSoonFont(size: 14))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(Color.red.opacity(0.8))
+                        .cornerRadius(20)
+                }
+                .padding(.top, 8)
+                
                 Spacer()
                     .frame(minHeight: 40)
                 

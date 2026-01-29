@@ -263,4 +263,11 @@ class AppState: ObservableObject {
     
     /// Get all possible time options for the spinner display
     static let spinnerOptions: [Int] = [1, 2, 3, 5, -1, 8, 10, 15, 20, 30, -5]
+    
+    // TODO: Remove this in production
+    /// Reset allocated time so remaining time is 0
+    func resetAllocatedTimeToZero() {
+        dbManager.resetAllocatedTimeToZero()
+        refreshScreenTimeData()
+    }
 }

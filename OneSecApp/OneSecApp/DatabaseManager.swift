@@ -397,6 +397,25 @@ class DatabaseManager {
             print("❌ Reset error")
         }
     }
+    
+    // TODO: Remove this in production
+    /// Reset allocated screen time to match used time (so remaining = 0)
+    func resetAllocatedTimeToZero() {
+        guard db != nil else { return }
+        
+        checkAndResetDaily()
+        
+        if let row = queryRow() {
+            // Set allocated = used so remaining = 0
+            let updateSQL = "UPDATE screen_time SET allocated_screen_time = \(row.usedScreenTime);"
+            
+            if executeUpdate(updateSQL) {
+                print("Debug: Reset allocated time to \(row.usedScreenTime)s (remaining = 0)")
+            } else {
+                print("Reset allocated time error")
+            }
+        }
+    }
 }
 
 // MARK: - Data Model
