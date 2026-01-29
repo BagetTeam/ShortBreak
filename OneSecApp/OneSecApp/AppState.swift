@@ -3,7 +3,6 @@
 //  OneSecApp
 //
 //  Manages app state using clipboard-based bypass
-//  Manages app state using clipboard-based bypass
 //
 //  ARCHITECTURE:
 //  1. User opens Instagram → Automation triggers → Shortcut runs
@@ -13,11 +12,6 @@
 //  5. User sees choice: "Continue on Insta" or "Bring me to ShortBreak"
 //  6. If Continue → App writes "BYPASS_CONFIRM" to clipboard → Opens Instagram
 //  7. If ShortBreak → Opens web app instead
-//
-//  SCREEN TIME TRACKING:
-//  - When user enters Instagram, we record the entry time (Unix timestamp)
-//  - When user exits (detected via separate automation), we calculate duration
-//  - Duration is subtracted from allocated daily screen time
 //
 //  SCREEN TIME TRACKING:
 //  - When user enters Instagram, we record the entry time (Unix timestamp)
@@ -58,18 +52,11 @@ class AppState: ObservableObject {
     }
     
     /// Called when app is opened via URL scheme (onesec://?target=instagram://)
-    /// Called when app is opened via URL scheme (onesec://?target=instagram://)
     func handleURL(_ url: URL) {
         guard url.scheme == "onesec" else { return }
         
         let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
         let queryItems = components?.queryItems ?? []
-        
-        // Check if this is an exit notification (from the "Is Closed" automation)
-        if let action = queryItems.first(where: { $0.name == "action" })?.value, action == "exit" {
-            handleInstagramExit()
-            return
-        }
         
         // Check if this is an exit notification (from the "Is Closed" automation)
         if let action = queryItems.first(where: { $0.name == "action" })?.value, action == "exit" {

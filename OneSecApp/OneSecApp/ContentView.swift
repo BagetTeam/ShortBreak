@@ -194,7 +194,6 @@ struct HomeView: View {
                         .foregroundColor(.black)
                     
                     // Step 1: Install Entry Shortcut
-                    // Step 1: Install Entry Shortcut
                     Button(action: {
                         if let url = URL(string: entryShortcutURL) {
                             UIApplication.shared.open(url)
@@ -312,7 +311,6 @@ struct HomeView: View {
     }
 }
 
-// Guide for creating both automations (entry and exit)
 // Guide for creating both automations (entry and exit)
 struct AutomationGuideView: View {
     @Environment(\.dismiss) var dismiss

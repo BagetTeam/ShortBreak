@@ -3,12 +3,9 @@
 //  OneSecApp
 //
 //  The choice screen - continue to Instagram or go to ShortBreak
-//  The choice screen - continue to Instagram or go to ShortBreak
 //
 
 import SwiftUI
-import UIKit
-import CoreText
 import UIKit
 import CoreText
 
@@ -180,9 +177,6 @@ struct MindfulnessCheckInView: View {
             // Beige background
             beigeBackground
                 .ignoresSafeArea()
-            // Beige background
-            beigeBackground
-                .ignoresSafeArea()
             
             VStack(spacing: 0) {
                 // ShortBreak title at the very top
@@ -251,9 +245,7 @@ struct MindfulnessCheckInView: View {
                     }
                     .disabled(!hasTime)
                     .padding(.horizontal, 40)
-                    .padding(.horizontal, 40)
                     
-                    // Second card: ShortBreak Website
                     // Second card: ShortBreak Website
                     Button(action: {
                         handleGoToShortBreak()
