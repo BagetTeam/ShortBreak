@@ -188,51 +188,33 @@ class AppState: ObservableObject {
         }
     }
     
-    // MARK: - Spinner / Lottery Methods
+    // - Spinner / Lottery Methods
     
-    /// Check if claim is available
     func isClaimAvailable() -> Bool {
         return dbManager.isClaimAvailable(requiredSeconds: claimCooldown)
     }
     
-    /// Get time remaining until next claim (in seconds)
     func timeUntilNextClaim() -> Double {
         return dbManager.timeUntilNextClaim(requiredSeconds: claimCooldown)
     }
     
-    /// Start the spinner - called when user taps claim button
     func startSpinner() {
-        // Mark the claim time immediately
         dbManager.updateLastGiveAway()
         
-        // Roll the weighted random result
         wonScreenTime = rollWeightedScreenTime()
-        
-        // Show spinner
         shouldShowSpinner = true
-        
-        print("🎰 Starting spinner, will win: \(wonScreenTime) minutes")
     }
     
     /// Called when spinner animation completes - adds the won time
     func finishSpinner() {
-        // Add the won time to allocated screen time
         let seconds = Double(wonScreenTime * 60)
         dbManager.addScreenTime(seconds: seconds)
         
-        // Refresh data and hide spinner
         refreshScreenTimeData()
-        shouldShowSpinner = false
-        
-        print("✅ Spinner complete, added \(wonScreenTime) minutes")
+        shouldShowSpinner = false        
     }
     
-    /// Roll weighted random screen time
-    /// Returns minutes: 1, 2, 3, 5, 8, 10, 15, 20, or 30
-    /// Higher values are rarer (30min ≈ 1%)
     private func rollWeightedScreenTime() -> Int {
-        // Weights for each time option (higher = more common)
-        // Total weight = 100
         let options: [(minutes: Int, weight: Int)] = [
             (1, 20),   // 25% chance
             (2, 18),   // 22% chance
@@ -258,10 +240,9 @@ class AppState: ObservableObject {
             }
         }
         
-        return 1  // Fallback
+        return 1  
     }
     
-    /// Get all possible time options for the spinner display
     static let spinnerOptions: [Int] = [1, 2, 3, 5, -1, 8, 10, 15, 20, 30, -5]
     
     // TODO: Remove this in production

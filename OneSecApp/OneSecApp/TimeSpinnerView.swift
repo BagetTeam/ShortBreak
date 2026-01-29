@@ -146,7 +146,7 @@ struct TimeSpinnerView: View {
                 // Result message
                 if showResult {
                     VStack(spacing: 12) {
-                        Text("+\(appState.wonScreenTime) minutes")
+                        Text("\(isNegative ? "-" : "+") \(abs(appState.wonScreenTime)) minutes")
                             .font(comingSoonFont(size: 24))
                             .foregroundColor(.black)
                         
