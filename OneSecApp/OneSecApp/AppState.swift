@@ -60,7 +60,7 @@ class AppState: ObservableObject {
         
         // Check if this is an exit notification (from the "Is Closed" automation)
         if let action = queryItems.first(where: { $0.name == "action" })?.value, action == "exit" {
-            handleInstagramExit()
+            handleAppExit()
             return
         }
         
@@ -105,18 +105,18 @@ class AppState: ObservableObject {
         UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: ["ShortBreak"])
     }
     
-    /// Called when user taps "Continue to Instagram"
+    /// Called when user taps "Continue to app"
     func allowAccess(to app: String) {
         // Write bypass key to clipboard
         UIPasteboard.general.string = bypassKey
         
         targetApp = app
         
-        // Record Instagram entry time in database
-        dbManager.recordInstagramEntry()
+        // Record app entry time in database
+        dbManager.recordAppEntry()
         
         self.handleTimedNotification()
-        // Small delay to ensure clipboard is set, then open Instagram
+        // Small delay to ensure clipboard is set, then open app
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             self.openTargetApp()
         }
@@ -129,10 +129,10 @@ class AppState: ObservableObject {
         }
     }
     
-    /// Called when user exits Instagram (via separate automation)
-    func handleInstagramExit() {
+    /// Called when user exits app (via separate automation)
+    func handleAppExit() {
         handleCancelTimedNotification()
-        if let duration = dbManager.recordInstagramExit() {
+        if let duration = dbManager.recordAppExit() {
             print("Instagram session ended. Duration: \(Int(duration)) seconds")
             lastSessionDuration = duration
             refreshScreenTimeData()

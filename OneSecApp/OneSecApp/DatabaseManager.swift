@@ -253,7 +253,7 @@ class DatabaseManager {
     // MARK: - Instagram Entry/Exit Tracking
     
     /// Record when user enters Instagram (sets last_went_in to current Unix time)
-    func recordInstagramEntry() {
+    func recordAppEntry() {
         guard db != nil else { return }
         
         // Ensure we're on the right day first
@@ -272,7 +272,7 @@ class DatabaseManager {
     /// Record when user exits Instagram and calculate time spent
     /// Returns the session duration in seconds (or nil if no entry was recorded)
     @discardableResult
-    func recordInstagramExit() -> Double? {
+    func recordAppExit() -> Double? {
         guard db != nil else { return nil }
         
         guard let row = queryRow(), let entryTime = row.lastWentIn else {

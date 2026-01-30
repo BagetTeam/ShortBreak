@@ -6,7 +6,7 @@
 //  The bypass logic must be done in the Shortcut itself using file-based timestamp.
 //
 //  SCREEN TIME INTENTS:
-//  - RecordInstagramExitIntent: Called when user exits Instagram (via "Is Closed" automation)
+//  - RecordAppExitIntent: Called when user exits app (via "Is Closed" automation)
 //  - AddHourlyScreenTimeIntent: Called hourly to add random screen time allocation
 //  - GetRemainingScreenTimeIntent: Returns the remaining screen time in seconds
 //
@@ -28,18 +28,17 @@ struct OpenOneSecIntent: AppIntent {
 
 // MARK: - Screen Time Intents
 
-/// Records when user exits Instagram and calculates session duration
-/// Call this from an "Instagram Is Closed" automation
-struct RecordInstagramExitIntent: AppIntent {
-    static var title: LocalizedStringResource = "Record Instagram Exit"
-    static var description = IntentDescription("Records when you leave Instagram and calculates time spent")
+/// Records when user exits app and calculates session duration
+/// Call this from an "App Is Closed" automation
+struct RecordAppExitIntent: AppIntent {
+    static var title: LocalizedStringResource = "Record App Exit"
+    static var description = IntentDescription("Records when you leave app and calculates time spent")
     static var openAppWhenRun: Bool = false
     
     func perform() async throws -> some IntentResult & ReturnsValue<Double> {
         let dbManager = DatabaseManager.shared
         
-        if let duration = dbManager.recordInstagramExit() {
-            print("⏱️ Instagram session ended via Intent. Duration: \(Int(duration)) seconds")
+        if let duration = dbManager.recordAppExit() {
             return .result(value: duration)
         }
         
@@ -52,7 +51,7 @@ struct RecordInstagramExitIntent: AppIntent {
 /// Call this from an hourly automation
 struct AddHourlyScreenTimeIntent: AppIntent {
     static var title: LocalizedStringResource = "Add Hourly Screen Time"
-    static var description = IntentDescription("Adds a random amount of Instagram screen time (1-10 minutes)")
+    static var description = IntentDescription("Adds a random amount of app screen time (1-10 minutes)")
     static var openAppWhenRun: Bool = false
     
     func perform() async throws -> some IntentResult & ReturnsValue<Double> {
@@ -67,7 +66,7 @@ struct AddHourlyScreenTimeIntent: AppIntent {
 /// Returns the remaining screen time in seconds (can be negative if exceeded)
 struct GetRemainingScreenTimeIntent: AppIntent {
     static var title: LocalizedStringResource = "Get Remaining Screen Time"
-    static var description = IntentDescription("Gets how much Instagram screen time is left for today")
+    static var description = IntentDescription("Gets how much app screen time is left for today")
     static var openAppWhenRun: Bool = false
     
     func perform() async throws -> some IntentResult & ReturnsValue<Double> {
@@ -82,7 +81,7 @@ struct GetRemainingScreenTimeIntent: AppIntent {
 /// Checks if user has exceeded their allocated screen time
 struct HasExceededScreenTimeIntent: AppIntent {
     static var title: LocalizedStringResource = "Has Exceeded Screen Time"
-    static var description = IntentDescription("Checks if you've exceeded your Instagram time limit")
+    static var description = IntentDescription("Checks if you've exceeded your app time limit")
     static var openAppWhenRun: Bool = false
     
     func perform() async throws -> some IntentResult & ReturnsValue<Bool> {
@@ -94,17 +93,16 @@ struct HasExceededScreenTimeIntent: AppIntent {
     }
 }
 
-/// Records when user enters Instagram (for manual triggering if needed)
-struct RecordInstagramEntryIntent: AppIntent {
-    static var title: LocalizedStringResource = "Record Instagram Entry"
-    static var description = IntentDescription("Records when you open Instagram")
+/// Records when user enters app (for manual triggering if needed)
+struct RecordAppEntryIntent: AppIntent {
+    static var title: LocalizedStringResource = "Record App Entry"
+    static var description = IntentDescription("Records when you open app")
     static var openAppWhenRun: Bool = false
     
     func perform() async throws -> some IntentResult {
         let dbManager = DatabaseManager.shared
-        dbManager.recordInstagramEntry()
+        dbManager.recordAppEntry()
         
-        print("📱 Instagram entry recorded via Intent")
         return .result()
     }
 }
@@ -124,10 +122,10 @@ struct OneSecShortcuts: AppShortcutsProvider {
         )
         
         AppShortcut(
-            intent: RecordInstagramExitIntent(),
+            intent: RecordAppExitIntent(),
             phrases: [
                 "Record exit with \(.applicationName)",
-                "\(.applicationName) I left Instagram"
+                "\(.applicationName) I left app"
             ],
             shortTitle: "Record Exit",
             systemImageName: "rectangle.portrait.and.arrow.right"

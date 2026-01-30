@@ -219,11 +219,11 @@ struct MindfulnessCheckInView: View {
                     
                     Button(action: {
                         if hasTime {
-                            handleContinueToInsta()
+                            handleContinueToApp()
                         }
                     }) {
                         VStack(spacing: 4) {
-                            Text(hasTime ? "Continue on IG" : "No time available")
+                            Text(hasTime ? "Continue on \(appState.targetApp.hasSuffix("://") ? String(appState.targetApp.dropLast(3)) : appState.targetApp)" : "No time available")
                                 .font(comingSoonFont(size: 18))
                                 .foregroundColor(hasTime ? .black : .black.opacity(0.4))
                             
@@ -415,7 +415,7 @@ struct MindfulnessCheckInView: View {
         }
     }
     
-    private func handleContinueToInsta() {
+    private func handleContinueToApp() {
         // Same logic as before - set bypass and open Instagram
         let targetApp = appState.targetApp.isEmpty ? "instagram://" : appState.targetApp
         appState.allowAccess(to: targetApp)
