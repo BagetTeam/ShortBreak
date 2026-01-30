@@ -281,9 +281,7 @@ struct HomeView: View {
                     
                     // Step 3: Create Automations
                     Button(action: {
-                        if let url = URL(string: "shortcuts://") {
-                            UIApplication.shared.open(url)
-                        }
+                        showSetupGuide = true
                     }) {
                         HStack {
                             Text("3")
