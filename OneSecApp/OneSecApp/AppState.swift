@@ -133,7 +133,6 @@ class AppState: ObservableObject {
     func handleAppExit() {
         handleCancelTimedNotification()
         if let duration = dbManager.recordAppExit() {
-            print("Instagram session ended. Duration: \(Int(duration)) seconds")
             lastSessionDuration = duration
             refreshScreenTimeData()
             

@@ -140,9 +140,8 @@ struct SessionSummaryView: View {
                         .font(comingSoonFont(size: 28))
                         .foregroundColor(.black)
                     
-                    // Time spent on Instagram
                     VStack(spacing: 8) {
-                        Text("Time on Instagram")
+                        Text("Time on \(appState.targetApp.hasSuffix("://") ? String(appState.targetApp.dropLast(3)) : appState.targetApp)")
                             .font(comingSoonFont(size: 16))
                             .foregroundColor(.black.opacity(0.6))
                         

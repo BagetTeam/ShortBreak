@@ -263,9 +263,9 @@ class DatabaseManager {
         let updateSQL = "UPDATE screen_time SET last_went_in = \(currentTime);"
         
         if executeUpdate(updateSQL) {
-            print("📱 Recorded Instagram entry at Unix time: \(currentTime)")
+            print("Recorded Instagram entry at Unix time: \(currentTime)")
         } else {
-            print("❌ Record entry error")
+            print("Record entry error")
         }
     }
     
